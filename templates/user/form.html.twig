@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ action }}{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>{{ action }}</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.nom) }}
+        {{ form_row(form.prenom) }}
+        {{ form_row(form.mail) }}
+        {{ form_row(form.date_de_naissance) }}
+        {{ form_row(form.roles) }}
+        {{ form_row(form.mot_de_passe) }}
+
+        <button type="submit" class="btn btn-success">Valider</button>
+    {{ form_end(form) }}
+    
+    <a href="{{ path('users_list') }}" class="btn btn-secondary">Retour</a>
+</div>
+{% endblock %}
