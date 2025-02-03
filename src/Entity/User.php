@@ -27,20 +27,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $date_de_naissance = null;
 
-    #[ORM\Column(type: 'json')] // ✅ Stocke les rôles sous forme de tableau JSON
+    #[ORM\Column(type: 'json')]
     private array $roles = [];
 
     #[ORM\Column(length: 100, unique: true)]
     private ?string $mail = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $mot_de_passe = null;
+    private ?string $password = null;
 
-    /**
-     * @var Collection<int, Comment>
-     */
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'user')]
     private Collection $comments;
+
+    #[ORM\OneToOne(targetEntity: Cart::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
+    private ?Cart $cart = null;
 
     public function __construct()
     {
@@ -85,10 +85,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    // ✅ Suppression de la deuxième annotation `#[ORM\Column(type: 'json')]`
     public function getRoles(): array
     {
-        return $this->roles;
+        $roles = $this->roles;
+        $roles[] = 'ROLE_USER'; // Ajoute ROLE_USER par défaut
+        return array_unique($roles);
     }
 
     public function setRoles(array $roles): self
@@ -108,9 +109,43 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, Comment>
-     */
+    public function getEmail(): ?string
+    {
+        return $this->mail; // Symfony attend getEmail(), donc on fait une redirection vers getMail()
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): static
+    {
+        $this->password = $password;
+        return $this;
+    }
+
+    public function eraseCredentials(): void
+    {
+        // Cette méthode est utilisée pour effacer les informations sensibles après l'authentification
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->mail; // Utilisation correcte de "mail" comme identifiant unique
+    }
+    
+    public function getCart(): ?Cart
+    {
+        return $this->cart;
+    }
+    
+    public function setCart(?Cart $cart): self
+    {
+        $this->cart = $cart;
+        return $this;
+    }
+
     public function getComments(): Collection
     {
         return $this->comments;
@@ -120,7 +155,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->comments->contains($comment)) {
             $this->comments->add($comment);
-            $comment->setRelation($this);
+            $comment->setUser($this); 
         }
         return $this;
     }
@@ -128,37 +163,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeComment(Comment $comment): static
     {
         if ($this->comments->removeElement($comment)) {
-            if ($comment->getRelation() === $this) {
-                $comment->setRelation(null);
+            if ($comment->getUser() === $this) { 
+                $comment->setUser(null);
             }
         }
         return $this;
-    }
-
-    public function getMotDePasse(): ?string
-    {
-        return $this->mot_de_passe;
-    }
-
-    public function setMotDePasse(string $mot_de_passe): static
-    {
-        $this->mot_de_passe = $mot_de_passe;
-        return $this;
-    }
-
-    // ✅ Méthodes obligatoires pour `UserInterface`
-    public function getUserIdentifier(): string
-    {
-        return $this->mail; // ✅ Utilisation de "mail" comme identifiant
-    }
-
-    public function getPassword(): ?string
-    {
-        return $this->mot_de_passe; // ✅ Utilisation de "mot_de_passe" comme mot de passe
-    }
-
-    public function eraseCredentials(): void
-    {
-        // ✅ Cette méthode est utilisée pour effacer les informations sensibles après l'authentification
     }
 }

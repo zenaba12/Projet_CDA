@@ -12,6 +12,10 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Form\UserType;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+
 
 final class UserController extends AbstractController
 {
@@ -37,7 +41,7 @@ public function create(Request $request, EntityManagerInterface $em, UserPasswor
 
         // Hachage du mot de passe si un mot de passe est fourni
         if ($form->get('mot_de_passe')->getData()) {
-            $user->setMotDePasse($hasher->hashPassword($user, $form->get('mot_de_passe')->getData()));
+            $user->setPassword($hasher->hashPassword($user, $form->get('mot_de_passe')->getData()));
         }
 
         $user->setRoles(['ROLE_USER']);
@@ -67,7 +71,7 @@ public function edit(int $id, Request $request, EntityManagerInterface $em, User
     if ($form->isSubmitted() && $form->isValid()) {
         // Hachage du nouveau mot de passe si modifié
         if ($form->get('mot_de_passe')->getData()) {
-            $user->setMotDePasse($hasher->hashPassword($user, $form->get('mot_de_passe')->getData()));
+            $user->setPassword($hasher->hashPassword($user, $form->get('mot_de_passe')->getData()));
         }
 
         $em->flush();
@@ -94,6 +98,24 @@ public function delete(int $id, EntityManagerInterface $em): Response
 
     return $this->redirectToRoute('users_list');
 }
+#[Route('/api/test-admin', name: 'test_admin', methods: ['GET'])]
+#[IsGranted('ROLE_ADMIN')] public function testAdmin(): JsonResponse
+{
+  
+    $user = $this->getUser();
+    dump($user); 
+    if (!$user) {
+        return $this->json(['error' => 'Utilisateur non connecté'], 401);
+    }
 
+    return $this->json([
+        'message' => 'Bienvenue, Admin !',
+        'user' => [
+            'id' => $user->getId(),
+            'mail' => $user->getMail(), 
+            'roles' => $user->getRoles(),
+        ]
+    ]);
+}
 
 }

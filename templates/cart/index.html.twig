@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container">
+    <h1 class="my-4 text-center">🛒 Votre Panier</h1>
+
+    {% if cart and cart.cartItems|length > 0 %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Produit</th>
+                    <th>Prix</th>
+                    <th>Quantité</th>
+                    <th>Total</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart.cartItems %}
+                    <tr>
+                        <td>{{ item.product.nom }}</td>
+                        <td>{{ item.product.prix }} €</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.product.prix * item.quantity }} €</td>
+                        <td>
+                            <a href="{{ path('cart_remove', { id: item.id }) }}" class="btn btn-danger">❌ Retirer</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="text-center mt-4">
+            <a href="{{ path('cart_checkout') }}" class="btn btn-success">✅ Valider la commande</a>
+        </div>
+    {% else %}
+        <p class="text-center">Votre panier est vide.</p>
+    {% endif %}
+</div>
+{% endblock %}

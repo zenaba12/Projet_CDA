@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container">
+    <h1 class="my-4 text-center">{{ product is defined ? '📝 Modifier' : '➕ Ajouter' }} un Produit</h1>
+
+    <div class="card p-4 shadow-sm">
+        {{ form_start(form, { 'method': 'POST', 'enctype': 'multipart/form-data', 'attr': {'class': 'row g-3'} }) }}
+
+        <div class="row">
+            <div class="col-md-6">
+                {{ form_row(form.nom, { 'attr': {'class': 'form-control'} }) }}
+            </div>
+
+            <div class="col-md-6">
+                {{ form_row(form.prix, { 'attr': {'class': 'form-control'} }) }}
+            </div>
+        </div>
+
+        <div class="col-12">
+            {{ form_row(form.description, { 'attr': {'class': 'form-control'} }) }}
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                {{ form_row(form.category, { 'attr': {'class': 'form-select'} }) }}
+            </div>
+
+            <div class="col-md-6">
+                {{ form_row(form.stock, { 'attr': {'class': 'form-control'} }) }}
+            </div>
+        </div>
+
+        <div class="col-12">
+            {{ form_row(form.image, { 'attr': {'class': 'form-control'} }) }}
+        </div>
+
+        <div class="text-center mt-3">
+            <button type="submit" class="btn btn-success">💾 Sauvegarder</button>
+            <a href="{{ path('product_index') }}" class="btn btn-secondary">🔙 Retour</a>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}
