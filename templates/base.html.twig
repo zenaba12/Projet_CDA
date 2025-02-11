@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Welcome!{% endblock %}</title>
+    <title>{% block title %}Bienvenue{% endblock %}</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'><text y='1.2em' font-size='96'>⚫️</text><text y='1.3em' x='0.2em' font-size='76' fill='#fff'>sf</text></svg>">
 
     {% block stylesheets %}
@@ -50,6 +50,24 @@
             cursor: pointer;
             border-radius: 5px;
         }
+
+        .alert {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
     </style>
     {% endblock %}
 </head>
@@ -68,6 +86,7 @@
         <p>Non connecté</p>
         <a href="{{ path('app_login') }}">Se connecter</a>
     {% endif %}
+
 
     {% endblock %}
 

@@ -4,6 +4,15 @@
 <div class="container">
     <h1 class="my-4 text-center">🛒 Votre Panier</h1>
 
+    <!-- 🔹 Affichage des messages flash -->
+    {% for label, messages in app.flashes %}
+        <div class="alert alert-{{ label }}">
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        </div>
+    {% endfor %}
+
     {% if cart and cart.cartItems|length > 0 %}
         <table class="table">
             <thead>
@@ -29,10 +38,6 @@
                 {% endfor %}
             </tbody>
         </table>
-
-        <div class="text-center mt-4">
-            <a href="{{ path('cart_checkout') }}" class="btn btn-success">✅ Valider la commande</a>
-        </div>
     {% else %}
         <p class="text-center">Votre panier est vide.</p>
     {% endif %}

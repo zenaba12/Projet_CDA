@@ -24,15 +24,22 @@ class ProductController extends AbstractController
 {
     //  Afficher la liste des produits
     #[Route('/', name: 'product_index', methods: ['GET'])]
-    #[IsGranted('ROLE_ADMIN')]
     public function index(EntityManagerInterface $em): Response
     {
+        // Vérifie si l'utilisateur est administrateur
+    if (!$this->isGranted('ROLE_ADMIN')) {
+        // Ajoute un message flash
+        $this->addFlash('error', 'Cet espace est réservé aux administrateurs.');
+
+        // Redirige vers la page d'accueil au lieu de 403
+        return $this->redirectToRoute('app_home');
+    }
         $products = $em->getRepository(Product::class)->findAll();
         return $this->render('product/index.html.twig', ['products' => $products]);
     }
 
     //  Ajouter un produit
-    #[Route('/new', name: 'product_new', methods: ['GET'])]
+    #[Route('/new', name: 'product_new', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_ADMIN')]
     public function new(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
     {
@@ -113,7 +120,7 @@ class ProductController extends AbstractController
     }
 
     //  Supprimer un produit
-    #[Route('/delete/{id}', name: 'product_delete', methods: ['POST'])]
+    #[Route('/delete/{id}', name: 'product_delete', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_ADMIN')]
     public function delete(int $id, EntityManagerInterface $em, Request $request): Response
     {

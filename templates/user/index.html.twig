@@ -3,7 +3,7 @@
 {% block body %}
     <div class="container">
         <h1>Liste des utilisateurs</h1>
-
+ <a href="{{ path('user_create') }}" class="btn btn-warning btn-sm">Ajouter</a>
         {% if is_granted('ROLE_ADMIN') %}
             <table class="table table-striped mt-3">
                 <thead>

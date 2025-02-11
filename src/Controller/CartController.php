@@ -14,7 +14,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 #[Route('/cart')]
 class CartController extends AbstractController
 {
-    // 📌 Afficher le panier
+    //  Afficher le panier
     #[Route('/', name: 'cart_show')]
     public function showCart(Security $security, EntityManagerInterface $em): Response
     {
@@ -36,7 +36,7 @@ class CartController extends AbstractController
         ]);
     }
 
-    // 📌 Ajouter un produit au panier
+    // Ajouter un produit au panier
     #[Route('/add/{id}', name: 'cart_add')]
     public function addToCart(Product $product, EntityManagerInterface $em, Security $security): Response
     {
@@ -70,7 +70,7 @@ class CartController extends AbstractController
         return $this->redirectToRoute('cart_show');
     }
 
-    // 📌 Supprimer un produit du panier
+    //  Supprimer un produit du panier
     #[Route('/remove/{id}', name: 'cart_remove')]
     public function removeFromCart(CartItem $item, EntityManagerInterface $em, Security $security): Response
     {
@@ -90,7 +90,7 @@ class CartController extends AbstractController
         return $this->redirectToRoute('cart_show');
     }
 
-    // 📌 Valider la commande
+    //  Valider la commande
     #[Route('/checkout', name: 'cart_checkout')]
     public function checkout(EntityManagerInterface $em, Security $security): Response
     {

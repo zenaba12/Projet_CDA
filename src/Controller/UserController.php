@@ -12,25 +12,35 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Form\UserType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 #[Route('/users')]
 class UserController extends AbstractController
 {
     #[Route('/', name: 'users_list', methods: ['GET'])]
-    #[IsGranted('ROLE_ADMIN')]
-    public function index(EntityManagerInterface $em): Response
-    {
-        // Vérifie si l'utilisateur a le rôle ADMIN
+public function index(EntityManagerInterface $em): Response
+{ 
+    // Vérifie si l'utilisateur est bien authentifié
+    if (!$this->getUser()) {
+        return $this->redirectToRoute('app_login');
+    }
+
+    // Vérifie si l'utilisateur est administrateur
     if (!$this->isGranted('ROLE_ADMIN')) {
-        return $this->redirectToRoute('app_login'); // ✅ Redirige vers login si pas admin
-    }
-        $users = $em->getRepository(User::class)->findAll();
+        // Ajoute un message flash
+        $this->addFlash('error', 'Cet espace est réservé aux administrateurs.');
 
-        return $this->render('user/index.html.twig', [
-            'users' => $users,
-        ]);
+        // Redirige vers la page d'accueil au lieu de 403
+        return $this->redirectToRoute('app_home');
     }
 
+    // Récupère la liste des utilisateurs si l'utilisateur est admin
+    $users = $em->getRepository(className: User::class)->findAll();
+
+    return $this->render('user/index.html.twig', [
+        'users' => $users,
+    ]);
+}
     #[Route('/create', name: 'user_create', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_ADMIN')]
     public function create(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $hasher): Response
@@ -88,7 +98,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/delete/{id}', name: 'user_delete', methods: ['POST'])]
+    #[Route('/delete/{id}', name: 'user_delete', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_ADMIN')]
     public function delete(int $id, EntityManagerInterface $em): Response
     {
