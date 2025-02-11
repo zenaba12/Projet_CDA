@@ -20,43 +20,31 @@ class AuthController extends AbstractController
         UserPasswordHasherInterface $passwordHasher,
         JWTTokenManagerInterface $jwtManager
     ): JsonResponse {
-        $data = json_decode($request->getContent(), true);
+        try {
+            $data = json_decode($request->getContent(), true);
 
-        // 🔍 Vérification des données reçues
-        dump("Données reçues :", $data);
-        dump("Requête brute :", $request->getContent());
+            if (!isset($data['email'], $data['password'])) {
+                return $this->json(['error' => 'Mail and password must be provided'], 400);
+            }
 
-        // ✅ Vérification de la présence des champs
-        if (!isset($data['mail'], $data['mot_de_passe'])) {
-            dump("❌ Clés manquantes !");
-            return $this->json(['error' => 'Mail and password must be provided'], 400);
+            $user = $em->getRepository(User::class)->findOneBy(['email' => $data['email']]);
+
+            if (!$user) {
+                return $this->json(['error' => 'Invalid credentials - utilisateur non trouvé'], 401);
+            }
+
+            if (!$passwordHasher->isPasswordValid($user, $data['password'])) {
+                return $this->json(['error' => 'Invalid credentials - mauvais mot de passe'], 401);
+            }
+
+            $token = $jwtManager->create($user);
+
+            return $this->json([
+                'message' => 'Login successful',
+                'token' => $token
+            ]);
+        } catch (\Exception $e) {
+            return $this->json(['error' => 'Une erreur s\'est produite: ' . $e->getMessage()], 500);
         }
-
-        // 🔍 Recherche de l'utilisateur en base de données
-        $user = $em->getRepository(User::class)->findOneBy(['mail' => $data['mail']]);
-
-        if (!$user) {
-            dump("❌ Utilisateur non trouvé :", $data['mail']);
-            return $this->json(['error' => 'Invalid credentials - utilisateur non trouvé'], 401);
-        }
-
-        dump("✅ Utilisateur trouvé :", $user->getMail());
-
-        // 🔍 Vérification du mot de passe
-        dump("Mot de passe entré :", $data['mot_de_passe']);
-        dump("Mot de passe stocké en base :", $user->getPassword());
-
-        if (!$passwordHasher->isPasswordValid($user, $data['mot_de_passe'])) {
-            dump("❌ Le mot de passe est invalide !");
-            return $this->json(['error' => 'Invalid credentials - mauvais mot de passe'], 401);
-        }
-
-        dump("✅ Authentification réussie !");
-        $token = $jwtManager->create($user);
-
-        return $this->json([
-            'message' => 'Login successful',
-            'token' => $token
-        ]);
     }
 }

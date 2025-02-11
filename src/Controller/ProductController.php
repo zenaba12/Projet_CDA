@@ -24,6 +24,7 @@ class ProductController extends AbstractController
 {
     //  Afficher la liste des produits
     #[Route('/', name: 'product_index', methods: ['GET'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function index(EntityManagerInterface $em): Response
     {
         $products = $em->getRepository(Product::class)->findAll();
@@ -31,7 +32,7 @@ class ProductController extends AbstractController
     }
 
     //  Ajouter un produit
-    #[Route('/new', name: 'product_new', methods: ['GET', 'POST'])]
+    #[Route('/new', name: 'product_new', methods: ['GET'])]
     #[IsGranted('ROLE_ADMIN')]
     public function new(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
     {

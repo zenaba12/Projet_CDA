@@ -39,12 +39,12 @@ class UserType extends AbstractType
                 'multiple' => true,
                 'label' => 'Rôles'
             ])
-            ->add('mail', EmailType::class, [
+            ->add('email', EmailType::class, [
                 'label' => 'Email',
                 'required' => true
             ])
-            ->add('mot_de_passe', PasswordType::class, [
-                'label' => 'Mot de passe',
+            ->add('password', PasswordType::class, [
+                'label' => 'password',
                 'mapped' => false, // Important pour ne pas modifier le mot de passe existant par défaut
                 'required' => false,
             ]);

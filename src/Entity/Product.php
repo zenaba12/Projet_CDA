@@ -43,10 +43,17 @@ class Product
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $image = null;
 
+    /**
+     * @var Collection<int, Commande>
+     */
+    #[ORM\ManyToMany(targetEntity: Commande::class, mappedBy: 'product')]
+    private Collection $commandes;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
         $this->cartItems = new ArrayCollection();
+        $this->commandes = new ArrayCollection();
     }
 
     public function getId(): ?int { return $this->id; }
@@ -90,4 +97,31 @@ class Product
 
     public function getImage(): ?string { return $this->image; }
     public function setImage(?string $image): static { $this->image = $image; return $this; }
+
+    /**
+     * @return Collection<int, Commande>
+     */
+    public function getCommandes(): Collection
+    {
+        return $this->commandes;
+    }
+
+    public function addCommande(Commande $commande): static
+    {
+        if (!$this->commandes->contains($commande)) {
+            $this->commandes->add($commande);
+            $commande->addProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommande(Commande $commande): static
+    {
+        if ($this->commandes->removeElement($commande)) {
+            $commande->removeProduct($this);
+        }
+
+        return $this;
+    }
 }

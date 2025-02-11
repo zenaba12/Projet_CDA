@@ -31,7 +31,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private array $roles = [];
 
     #[ORM\Column(length: 100, unique: true)]
-    private ?string $mail = null;
+    private ?string $email = null; // ✅ Remplacé "mail" par "email"
 
     #[ORM\Column(length: 255)]
     private ?string $password = null;
@@ -42,9 +42,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToOne(targetEntity: Cart::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
     private ?Cart $cart = null;
 
+    /**
+     * @var Collection<int, Commande>
+     */
+    #[ORM\OneToMany(targetEntity: Commande::class, mappedBy: 'relation')]
+    private Collection $commandes;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
+        $this->commandes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -88,7 +95,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        $roles[] = 'ROLE_USER'; // Ajoute ROLE_USER par défaut
+        $roles[] = 'ROLE_USER';
         return array_unique($roles);
     }
 
@@ -98,20 +105,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getMail(): ?string
+    public function getEmail(): ?string 
     {
-        return $this->mail;
+        return $this->email;
     }
 
-    public function setMail(string $mail): static
+    public function setEmail(string $email): static
     {
-        $this->mail = $mail;
+        $this->email = $email;
         return $this;
-    }
-
-    public function getEmail(): ?string
-    {
-        return $this->mail; // Symfony attend getEmail(), donc on fait une redirection vers getMail()
     }
 
     public function getPassword(): ?string
@@ -132,14 +134,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getUserIdentifier(): string
     {
-        return $this->mail; // Utilisation correcte de "mail" comme identifiant unique
+        return $this->email; // ✅ Utilisation correcte de "email" comme identifiant unique
     }
-    
+
     public function getCart(): ?Cart
     {
         return $this->cart;
     }
-    
+
     public function setCart(?Cart $cart): self
     {
         $this->cart = $cart;
@@ -155,7 +157,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->comments->contains($comment)) {
             $this->comments->add($comment);
-            $comment->setUser($this); 
+            $comment->setUser($this);
         }
         return $this;
     }
@@ -163,10 +165,40 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeComment(Comment $comment): static
     {
         if ($this->comments->removeElement($comment)) {
-            if ($comment->getUser() === $this) { 
+            if ($comment->getUser() === $this) {
                 $comment->setUser(null);
             }
         }
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Commande>
+     */
+    public function getCommandes(): Collection
+    {
+        return $this->commandes;
+    }
+
+    public function addCommande(Commande $commande): static
+    {
+        if (!$this->commandes->contains($commande)) {
+            $this->commandes->add($commande);
+            $commande->setRelation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommande(Commande $commande): static
+    {
+        if ($this->commandes->removeElement($commande)) {
+            // set the owning side to null (unless already changed)
+            if ($commande->getRelation() === $this) {
+                $commande->setRelation(null);
+            }
+        }
+
         return $this;
     }
 }

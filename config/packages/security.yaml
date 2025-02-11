@@ -1,56 +1,66 @@
 security:
-  #  Configuration des hashers de mot de passe (pour chiffrer les mots de passe)
   password_hashers:
     Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
-      algorithm: auto # Symfony choisit l'algorithme automatiquement (bcrypt ou argon2)
-      cost: 15 # Niveau de complexité du hashage
+      algorithm: auto
+      cost: 15
 
-  #  Configuration du fournisseur d'utilisateurs (récupération des utilisateurs)
   providers:
     app_user_provider:
       entity:
-        class: App\Entity\User # Indique que les utilisateurs proviennent de l'entité User
-        property: mail #  Vérifie que "mail" correspond bien au champ dans ta BDD
+        class: App\Entity\User
+        property: email
 
-  #  Définition des firewalls (zones de protection des routes)
   firewalls:
-    #  Firewall pour le développement (profiler, assets statiques)
     dev:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
-      security: false #  Désactivation de la sécurité sur ces routes
+      security: false
 
-    #  Firewall principal pour le site
     main:
-      pattern: ^/ #  Couvre toutes les routes de l'application
-      provider: app_user_provider #  Utilise l'entité User
-      form_login: #  Connexion via formulaire
-        login_path: app_login #  Route du formulaire de connexion
-        check_path: /login #  Route pour vérifier l'identité
-        default_target_path: /users #  Page après connexion réussie
-      logout:
-        path: /logout #  Route pour se déconnecter
+      pattern: ^/
+      provider: app_user_provider
+      lazy: true
+      form_login:
+        login_path: app_login
+        check_path: app_login
+        username_parameter: email
+        password_parameter: password
+        csrf_parameter: _csrf_token # ✅ Correction ici
+        csrf_token_id: authenticate # ✅ Ajout ici
+        default_target_path: /
 
-    # Firewall pour l'API (Authentification JSON)
+      logout:
+        path: app_logout
+        target: app_login
+      remember_me:
+        secret: "%kernel.secret%"
+        lifetime: 604800
+        path: /
+        always_remember_me: true
+
     api_login:
       pattern: ^/api/login
-      stateless: true #  Pas de session gérée, tout se fait via tokens JWT
+      stateless: true
       provider: app_user_provider
       json_login:
-        check_path: /api/login #  Route pour envoyer les identifiants
-        success_handler: lexik_jwt_authentication.handler.authentication_success #  Gère la réponse en cas de succès
-        failure_handler: lexik_jwt_authentication.handler.authentication_failure #  Gère la réponse en cas d'échec
+        check_path: /api/login
+        username_path: email
+        password_path: password
+        success_handler: lexik_jwt_authentication.handler.authentication_success
+        failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
-    #  Firewall pour sécuriser les routes API après connexion
     api:
       pattern: ^/api
       stateless: true
       provider: app_user_provider
-      jwt: ~ #  Active la protection JWT pour ces routes
+      jwt: ~
 
-  #  Contrôle d'accès aux routes (définition des permissions)
   access_control:
-    - { path: ^/api/login, roles: PUBLIC_ACCESS } #  Permet à tout le monde d'accéder au login API
-    - { path: ^/api, roles: IS_AUTHENTICATED_FULLY } #  Nécessite un JWT pour accéder aux autres routes API
-    - { path: ^/users/new, roles: PUBLIC_ACCESS } #  L'inscription est publique
-    - { path: ^/users, roles: IS_AUTHENTICATED_FULLY } #  Les utilisateurs connectés peuvent voir les profils
-    - { path: ^/admin, roles: ROLE_ADMIN } #  Seuls les admins peuvent accéder à l'administration
+    - { path: ^/login, roles: PUBLIC_ACCESS }
+    - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+    - { path: ^/users, roles: ROLE_ADMIN }
+    - { path: ^/product, roles: ROLE_ADMIN }
+    - { path: ^/admin, roles: ROLE_ADMIN }
+
+firewalls:
+  main:
+    entry_point: form_login
