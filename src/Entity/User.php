@@ -31,27 +31,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private array $roles = [];
 
     #[ORM\Column(length: 100, unique: true)]
-    private ?string $email = null; // ✅ Remplacé "mail" par "email"
+    private ?string $email = null;
 
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
-    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'user')]
+    #[ORM\ManyToMany(targetEntity: Product::class, mappedBy: 'user')]
     private Collection $comments;
 
     #[ORM\OneToOne(targetEntity: Cart::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
     private ?Cart $cart = null;
 
     /**
-     * @var Collection<int, Commande>
+     * @var Collection<int, Order>
      */
-    #[ORM\OneToMany(targetEntity: Commande::class, mappedBy: 'relation')]
-    private Collection $commandes;
+    #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'user')]
+    private Collection $orders;
 
     public function __construct()
     {
         $this->comments = new ArrayCollection();
-        $this->commandes = new ArrayCollection();
+        $this->orders = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -129,12 +129,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function eraseCredentials(): void
     {
-        // Cette méthode est utilisée pour effacer les informations sensibles après l'authentification
+        // Supprimer les informations sensibles après l'authentification
     }
 
     public function getUserIdentifier(): string
     {
-        return $this->email; // ✅ Utilisation correcte de "email" comme identifiant unique
+        return $this->email;
     }
 
     public function getCart(): ?Cart
@@ -173,32 +173,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, Commande>
+     * @return Collection<int, Order>
      */
-    public function getCommandes(): Collection
+    public function getOrders(): Collection
     {
-        return $this->commandes;
+        return $this->orders;
     }
 
-    public function addCommande(Commande $commande): static
+    public function addOrder(Order $order): static
     {
-        if (!$this->commandes->contains($commande)) {
-            $this->commandes->add($commande);
-            $commande->setRelation($this);
+        if (!$this->orders->contains($order)) {
+            $this->orders->add($order);
+            $order->setUser($this);
         }
-
         return $this;
     }
 
-    public function removeCommande(Commande $commande): static
+    public function removeOrder(Order $order): static
     {
-        if ($this->commandes->removeElement($commande)) {
-            // set the owning side to null (unless already changed)
-            if ($commande->getRelation() === $this) {
-                $commande->setRelation(null);
+        if ($this->orders->removeElement($order)) {
+            if ($order->getUser() === $this) {
+                $order->setUser(null);
             }
         }
-
         return $this;
     }
 }

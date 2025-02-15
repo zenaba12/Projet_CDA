@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<h1>📦 Mes Commandes</h1>
+
+{% if orders is empty %}
+    <p>Vous n'avez encore passé aucune commande.</p>
+{% else %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Date</th>
+                <th>Statut</th>
+                <th>Total</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+                <tr>
+                    <td>#{{ order.id }}</td>
+                    <td>{{ order.date|date('d/m/Y') }}</td>
+                    <td>{{ order.status }}</td>
+                    <td>{{ order.getTotalPrice() }} €</td>
+                    <td>
+                        <a href="{{ path('order_view', { id: order.id }) }}" class="btn btn-info">👁 Voir</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+{% endblock %}

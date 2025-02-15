@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<h1>📦 Détails de la Commande #{{ order.id }}</h1>
+<p>Date: {{ order.date|date('d/m/Y') }}</p>
+<p>Statut: {{ order.status }}</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Produit</th>
+            <th>Quantité</th>
+            <th>Prix</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in order.orderItems %}
+            <tr>
+                <td>{{ item.product.nom }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.product.prix }} €</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

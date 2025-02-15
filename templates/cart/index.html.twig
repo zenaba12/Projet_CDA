@@ -29,7 +29,17 @@
                     <tr>
                         <td>{{ item.product.nom }}</td>
                         <td>{{ item.product.prix }} €</td>
-                        <td>{{ item.quantity }}</td>
+                        <td>
+    {% if forms[item.id] is defined %}
+        <form action="{{ path('cart_update', { id: item.id }) }}" method="post">
+            {{ form_start(forms[item.id]) }}
+            {{ form_widget(forms[item.id].quantity) }}
+            <button type="submit" class="btn btn-primary">🔄 Mettre à jour</button>
+            {{ form_end(forms[item.id]) }}
+        </form>
+    {% endif %}
+</td>
+
                         <td>{{ item.product.prix * item.quantity }} €</td>
                         <td>
                             <a href="{{ path('cart_remove', { id: item.id }) }}" class="btn btn-danger">❌ Retirer</a>

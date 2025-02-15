@@ -27,16 +27,13 @@ class Product
     #[ORM\Column]
     private ?int $stock = null;
 
-    // ✅ Correction de la relation avec Comment
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'product', cascade: ['remove'], orphanRemoval: true)]
     private Collection $comments;
 
-    // ✅ Correction de la relation avec Category
     #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')] 
     private ?Category $category = null;
 
-    // ✅ Relation avec le panier (CartItem)
     #[ORM\OneToMany(targetEntity: CartItem::class, mappedBy: 'product', cascade: ['remove'], orphanRemoval: true)]
     private Collection $cartItems;
 
@@ -44,32 +41,71 @@ class Product
     private ?string $image = null;
 
     /**
-     * @var Collection<int, Commande>
+     * @var Collection<int, Order>
      */
-    #[ORM\ManyToMany(targetEntity: Commande::class, mappedBy: 'product')]
-    private Collection $commandes;
+    #[ORM\ManyToMany(targetEntity: Order::class, mappedBy: 'products')]
+    private Collection $orders;
 
     public function __construct()
     {
         $this->comments = new ArrayCollection();
         $this->cartItems = new ArrayCollection();
-        $this->commandes = new ArrayCollection();
+        $this->orders = new ArrayCollection();
     }
 
-    public function getId(): ?int { return $this->id; }
-    public function getNom(): ?string { return $this->nom; }
-    public function setNom(string $nom): static { $this->nom = $nom; return $this; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getDescription(): ?string { return $this->description; }
-    public function setDescription(string $description): static { $this->description = $description; return $this; }
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
 
-    public function getPrix(): ?float { return $this->prix; }
-    public function setPrix(float $prix): static { $this->prix = $prix; return $this; }
+    public function setNom(string $nom): static
+    {
+        $this->nom = $nom;
+        return $this;
+    }
 
-    public function getStock(): ?int { return $this->stock; }
-    public function setStock(int $stock): static { $this->stock = $stock; return $this; }
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
 
-    public function getComments(): Collection { return $this->comments; }
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    public function getPrix(): ?float
+    {
+        return $this->prix;
+    }
+
+    public function setPrix(float $prix): static
+    {
+        $this->prix = $prix;
+        return $this;
+    }
+
+    public function getStock(): ?int
+    {
+        return $this->stock;
+    }
+
+    public function setStock(int $stock): static
+    {
+        $this->stock = $stock;
+        return $this;
+    }
+
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
 
     public function addComment(Comment $comment): static
     {
@@ -90,38 +126,55 @@ class Product
         return $this;
     }
 
-    public function getCategory(): ?Category { return $this->category; }
-    public function setCategory(?Category $category): static { $this->category = $category; return $this; }
-
-    public function getCartItems(): Collection { return $this->cartItems; }
-
-    public function getImage(): ?string { return $this->image; }
-    public function setImage(?string $image): static { $this->image = $image; return $this; }
-
-    /**
-     * @return Collection<int, Commande>
-     */
-    public function getCommandes(): Collection
+    public function getCategory(): ?Category
     {
-        return $this->commandes;
+        return $this->category;
     }
 
-    public function addCommande(Commande $commande): static
+    public function setCategory(?Category $category): static
     {
-        if (!$this->commandes->contains($commande)) {
-            $this->commandes->add($commande);
-            $commande->addProduct($this);
-        }
-
+        $this->category = $category;
         return $this;
     }
 
-    public function removeCommande(Commande $commande): static
+    public function getCartItems(): Collection
     {
-        if ($this->commandes->removeElement($commande)) {
-            $commande->removeProduct($this);
-        }
+        return $this->cartItems;
+    }
 
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): static
+    {
+        $this->image = $image;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Order>
+     */
+    public function getOrders(): Collection
+    {
+        return $this->orders;
+    }
+
+    public function addOrder(Order $order): static
+    {
+        if (!$this->orders->contains($order)) {
+            $this->orders->add($order);
+            $order->addProduct($this);
+        }
+        return $this;
+    }
+
+    public function removeOrder(Order $order): static
+    {
+        if ($this->orders->removeElement($order)) {
+            $order->removeProduct($this);
+        }
         return $this;
     }
 }

@@ -5,45 +5,63 @@ namespace App\Controller;
 use App\Entity\Cart;
 use App\Entity\CartItem;
 use App\Entity\Product;
+use App\Form\CartType;
+use App\Form\CartItemType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\Request;
 
 #[Route('/cart')]
 class CartController extends AbstractController
 {
-    //  Afficher le panier
+    // ✅ Afficher le panier
     #[Route('/', name: 'cart_show')]
-    public function showCart(Security $security, EntityManagerInterface $em): Response
-    {
-        $user = $security->getUser();
-        if (!$user) return $this->redirectToRoute('app_login');
+public function showCart(Security $security, EntityManagerInterface $em, Request $request): Response
+{
+    $user = $security->getUser();
+    if (!$user) return $this->redirectToRoute('app_login');
 
-        $cart = $em->getRepository(Cart::class)->findOneBy(['user' => $user]);
+    $cart = $em->getRepository(Cart::class)->findOneBy(['user' => $user]);
 
-        $total = 0;
-        if ($cart) {
-            foreach ($cart->getCartItems() as $item) {
-                $total += $item->getProduct()->getPrix() * $item->getQuantity();
-            }
+    $total = 0;
+    $forms = [];
+
+    if ($cart) {
+        foreach ($cart->getCartItems() as $item) {
+            $total += $item->getProduct()->getPrix() * $item->getQuantity();
+
+            // 🔹 Création du formulaire pour chaque article
+            $form = $this->createFormBuilder()
+                ->setAction($this->generateUrl('cart_update', ['id' => $item->getId()]))
+                ->setMethod('POST')
+                ->add('quantity', IntegerType::class, [
+                    'data' => $item->getQuantity(),
+                    'attr' => ['min' => 1]
+                ])
+                ->add('save', SubmitType::class, ['label' => '🔄 Mettre à jour'])
+                ->getForm();
+
+            $forms[$item->getId()] = $form->createView();
         }
-
-        return $this->render('cart/index.html.twig', [
-            'cart' => $cart,
-            'total' => $total
-        ]);
     }
 
-    // Ajouter un produit au panier
-    #[Route('/add/{id}', name: 'cart_add')]
+    return $this->render('cart/index.html.twig', [
+        'cart' => $cart,
+        'total' => $total,
+        'forms' => $forms, // 🔹 Envoi des formulaires au template
+    ]);
+}
+
+    // ✅ Ajouter un produit au panier
+    #[Route('/add/{id}', name: 'cart_add', methods: ['GET', 'POST'])]
     public function addToCart(Product $product, EntityManagerInterface $em, Security $security): Response
     {
         $user = $security->getUser();
         if (!$user) return $this->redirectToRoute('app_login');
 
-        // 🔹 Récupérer le panier de l'utilisateur ou en créer un
         $cart = $em->getRepository(Cart::class)->findOneBy(['user' => $user]);
         if (!$cart) {
             $cart = new Cart();
@@ -51,7 +69,6 @@ class CartController extends AbstractController
             $em->persist($cart);
         }
 
-        // 🔹 Vérifier si le produit est déjà dans le panier
         $item = $em->getRepository(CartItem::class)->findOneBy(['cart' => $cart, 'product' => $product]);
 
         if ($item) {
@@ -70,7 +87,7 @@ class CartController extends AbstractController
         return $this->redirectToRoute('cart_show');
     }
 
-    //  Supprimer un produit du panier
+    // ✅ Supprimer un produit du panier
     #[Route('/remove/{id}', name: 'cart_remove')]
     public function removeFromCart(CartItem $item, EntityManagerInterface $em, Security $security): Response
     {
@@ -90,7 +107,22 @@ class CartController extends AbstractController
         return $this->redirectToRoute('cart_show');
     }
 
-    //  Valider la commande
+    // ✅ Mise à jour de la quantité d'un produit dans le panier
+    #[Route('/update/{id}', name: 'cart_update', methods: ['POST'])]
+    public function updateCartItem(Request $request, CartItem $cartItem, EntityManagerInterface $em): Response
+    {
+        $form = $this->createForm(CartItemType::class, $cartItem);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->flush();
+            $this->addFlash('success', 'Quantité mise à jour !');
+        }
+
+        return $this->redirectToRoute('cart_show');
+    }
+
+    // ✅ Valider la commande
     #[Route('/checkout', name: 'cart_checkout')]
     public function checkout(EntityManagerInterface $em, Security $security): Response
     {
@@ -103,7 +135,7 @@ class CartController extends AbstractController
             return $this->redirectToRoute('cart_show');
         }
 
-        // TODO: Ajouter la logique de création de commande
+        // 🔹 TODO: Ajouter la logique de création de commande
 
         // 🔹 Vider le panier
         foreach ($cart->getCartItems() as $item) {
