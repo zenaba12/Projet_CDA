@@ -6,7 +6,6 @@ use App\Entity\Order;
 use App\Entity\OrderItem;
 use App\Entity\Cart;
 use App\Entity\CartItem;
-use App\Form\OrderType;
 use App\Repository\OrderRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -50,7 +49,7 @@ class OrderController extends AbstractController
         ]);
     }
 
-    // 🔹 Créer une commande depuis le panier
+    // 🔹 Créer une commande depuis le panier 
     #[Route('/create', name: 'order_create')]
     public function createOrder(EntityManagerInterface $em, Security $security): Response
     {
@@ -65,6 +64,7 @@ class OrderController extends AbstractController
             return $this->redirectToRoute('cart_show');
         }
 
+        // 🔹 Création de la commande
         $order = new Order();
         $order->setUser($user);
         $order->setDate(new DateTime());
@@ -79,8 +79,14 @@ class OrderController extends AbstractController
             $order->addOrderItem($orderItem);
         }
 
+        // 🔹 On s'assure que la commande est bien enregistrée AVANT de vider le panier
         $em->persist($order);
-        $cart->clearCart();
+        $em->flush();
+
+        // 🔹 Maintenant que la commande est enregistrée, on peut vider le panier
+        foreach ($cart->getCartItems() as $cartItem) {
+            $em->remove($cartItem);
+        }
         $em->flush();
 
         $this->addFlash('success', 'Commande créée avec succès.');

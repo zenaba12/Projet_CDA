@@ -21,8 +21,18 @@
                 <tr>
                     <td>#{{ order.id }}</td>
                     <td>{{ order.date|date('d/m/Y') }}</td>
-                    <td>{{ order.status }}</td>
-                    <td>{{ order.getTotalPrice() }} €</td>
+                    <td>
+                        {% if order.status == 'pending' %}
+                            <span class="badge bg-warning">En attente</span>
+                        {% elseif order.status == 'shipped' %}
+                            <span class="badge bg-primary">Expédiée</span>
+                        {% elseif order.status == 'delivered' %}
+                            <span class="badge bg-success">Livrée</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Inconnu</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ order.getTotalPrice()|number_format(2, ',', ' ') }} €</td>
                     <td>
                         <a href="{{ path('order_view', { id: order.id }) }}" class="btn btn-info">👁 Voir</a>
                     </td>

@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\OrderRepository;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
+#[ORM\Table(name: "`order`")] 
 class Order
 {
     #[ORM\Id]
@@ -26,13 +27,15 @@ class Order
     private Collection $orderItems;
 
     #[ORM\Column(length: 20)]
-    private ?string $status = 'pending'; // Statut initial "pending"
+    private ?string $status = 'pending';
 
     #[ORM\ManyToMany(targetEntity: Product::class, inversedBy: 'orders')]
-        private Collection $products;
+    private Collection $products;
+
     public function __construct()
     {
         $this->orderItems = new ArrayCollection();
+        $this->products = new ArrayCollection(); 
         $this->date = new \DateTime();
     }
 
@@ -40,7 +43,7 @@ class Order
     public function getUser(): ?User { return $this->user; }
     public function setUser(?User $user): static { $this->user = $user; return $this; }
     public function getDate(): ?\DateTimeInterface { return $this->date; }
-    public function setDate(\DateTimeInterface $date): static {$this->date = $date; return $this;}
+    public function setDate(\DateTimeInterface $date): static { $this->date = $date; return $this; }
     public function getStatus(): ?string { return $this->status; }
     public function setStatus(string $status): static { $this->status = $status; return $this; }
     public function getOrderItems(): Collection { return $this->orderItems; }
@@ -67,25 +70,25 @@ class Order
     public function getTotalPrice(): float
     {
         $total = 0;
-        foreach ($this->orderItems as $item) {
-            $total += $item->getProduct()->getPrix() * $item->getQuantity();
+        if ($this->orderItems) {
+            foreach ($this->orderItems as $item) {
+                $total += $item->getProduct()->getPrix() * $item->getQuantity();
+            }
         }
         return $total;
     }
+
     public function addProduct(Product $product): static
     {
         if (!$this->products->contains($product)) {
             $this->products->add($product);
-
         }
         return $this;
     }
 
     public function removeProduct(Product $product): static
     {
-         $this->products->removeElement($product); 
-          return $this;
-        }
-       
-    
+        $this->products->removeElement($product);
+        return $this;
+    }
 }
