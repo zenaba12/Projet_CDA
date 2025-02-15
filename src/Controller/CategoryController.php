@@ -15,7 +15,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/category')]
 class CategoryController extends AbstractController
 {
-    //  Afficher la liste des catégories (accessible à tous)
+    //Afficher la liste des catégories (accessible à tous)
     #[Route('/', name: 'category_index', methods: ['GET'])]
     public function index(CategoryRepository $categoryRepository): Response
     {
@@ -25,11 +25,16 @@ class CategoryController extends AbstractController
         ]);
     }
 
-    //  Ajouter une catégorie (ADMIN uniquement)
+    // Ajouter une catégorie (ADMIN uniquement)
     #[Route('/new', name: 'category_new', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_ADMIN')]
     public function new(Request $request, EntityManagerInterface $em): Response
     {
+        if (!$this->isGranted('ROLE_ADMIN')) {
+            $this->addFlash('error', 'Accès refusé.');
+            return $this->redirectToRoute('app_home');
+        }
+
         $category = new Category();
         $form = $this->createForm(CategoryType::class, $category);
         $form->handleRequest($request);
@@ -51,6 +56,11 @@ class CategoryController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     public function edit(Request $request, Category $category, EntityManagerInterface $em): Response
     {
+        if (!$this->isGranted('ROLE_ADMIN')) {
+            $this->addFlash('error', 'Accès refusé.');
+            return $this->redirectToRoute('app_home');
+        }
+
         $form = $this->createForm(CategoryType::class, $category);
         $form->handleRequest($request);
 
@@ -65,11 +75,16 @@ class CategoryController extends AbstractController
         ]);
     }
 
-    //  Supprimer une catégorie (ADMIN uniquement)
+    //Supprimer une catégorie (ADMIN uniquement)
     #[Route('/delete/{id}', name: 'category_delete', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN')]
     public function delete(Category $category, EntityManagerInterface $em, Request $request): Response
     {
+        if (!$this->isGranted('ROLE_ADMIN')) {
+            $this->addFlash('error', 'Accès refusé.');
+            return $this->redirectToRoute('app_home');
+        }
+
         if ($this->isCsrfTokenValid('delete' . $category->getId(), $request->request->get('_token'))) {
             $em->remove($category);
             $em->flush();
