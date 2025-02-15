@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<h1>📂 Catégories de Produits</h1>
+
+<a href="{{ path('category_new') }}" class="btn btn-success">➕ Ajouter une catégorie</a>
+
+{% if categories is empty %}
+    <p>Aucune catégorie disponible.</p>
+{% else %}
+    <ul>
+        {% for category in categories %}
+            <li>
+                <strong>{{ category.nom }}</strong>
+                <a href="{{ path('category_edit', { id: category.id }) }}" class="btn btn-warning">✏ Modifier</a>
+                <form action="{{ path('category_delete', { id: category.id }) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">🗑 Supprimer</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+{% endblock %}

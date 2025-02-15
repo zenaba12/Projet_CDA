@@ -22,7 +22,7 @@ class Category
      * @var Collection<int, Product>
      */
     #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'category', cascade: ['remove'])]
-    private Collection $products; // ✅ On garde UNE seule relation
+    private Collection $products; 
 
     public function __construct()
     {
