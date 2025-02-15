@@ -6,6 +6,7 @@ use App\Entity\Order;
 use App\Entity\OrderItem;
 use App\Entity\Cart;
 use App\Entity\CartItem;
+use App\Form\OrderType;
 use App\Repository\OrderRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,7 +19,7 @@ use DateTime;
 #[Route('/order')]
 class OrderController extends AbstractController
 {
-    // 🔹 Lister les commandes de l'utilisateur (UNIQUEMENT SES PROPRES COMMANDES)
+    // 🔹 Lister les commandes de l'utilisateur
     #[Route('/', name: 'order_list')]
     public function listOrders(OrderRepository $orderRepository, Security $security): Response
     {
@@ -27,14 +28,14 @@ class OrderController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        $orders = $orderRepository->findBy(['user' => $user]); // ✅ L'utilisateur ne voit que ses commandes
+        $orders = $orderRepository->findBy(['user' => $user]);
 
         return $this->render('order/user_orders.html.twig', [
             'orders' => $orders,
         ]);
     }
 
-    // 🔹 Voir une commande spécifique (UNIQUEMENT SI ELLE LUI APPARTIENT)
+    // 🔹 Voir une commande spécifique
     #[Route('/{id}', name: 'order_view')]
     public function viewOrder(Order $order, Security $security): Response
     {

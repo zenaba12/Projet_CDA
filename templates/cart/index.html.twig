@@ -30,16 +30,11 @@
                         <td>{{ item.product.nom }}</td>
                         <td>{{ item.product.prix }} €</td>
                         <td>
-    {% if forms[item.id] is defined %}
-        <form action="{{ path('cart_update', { id: item.id }) }}" method="post">
-            {{ form_start(forms[item.id]) }}
-            {{ form_widget(forms[item.id].quantity) }}
-            <button type="submit" class="btn btn-primary">🔄 Mettre à jour</button>
-            {{ form_end(forms[item.id]) }}
-        </form>
-    {% endif %}
-</td>
-
+                            <form action="{{ path('cart_update', { id: item.id }) }}" method="post">
+                                {{ form_widget(forms[item.id].quantity) }}
+                                <button type="submit" class="btn btn-primary">🔄 Mettre à jour</button>
+                            </form>
+                        </td>
                         <td>{{ item.product.prix * item.quantity }} €</td>
                         <td>
                             <a href="{{ path('cart_remove', { id: item.id }) }}" class="btn btn-danger">❌ Retirer</a>
@@ -48,8 +43,22 @@
                 {% endfor %}
             </tbody>
         </table>
+
+        <!-- 🔹 Boutons pour commander et continuer les achats -->
+        <div class="d-flex justify-content-between mt-4">
+            <div>
+                <a href="{{ path('app_home') }}" class="btn btn-secondary">⬅️ Continuer les achats</a>
+            </div>
+            <div>
+                <a href="{{ path('cart_checkout') }}" class="btn btn-success">✅ Commander</a>
+            </div>
+        </div>
+
     {% else %}
         <p class="text-center">Votre panier est vide.</p>
+        <div class="text-center mt-3">
+            <a href="{{ path('app_home') }}" class="btn btn-primary">⬅️ Retour à la boutique</a>
+        </div>
     {% endif %}
 </div>
 {% endblock %}
