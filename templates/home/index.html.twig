@@ -1,20 +1,50 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello HomeController!{% endblock %}
+{% block title %}Accueil - Ma Boutique{% endblock %}
 
-{% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+{% block content %}
+    <div class="image text-center py-5">
+        <h2>Bienvenue sur mon shop !</h2>
+        <a class="btn btn-primary" href="{{ path('product_index') }}">Découvrir le catalogue</a>
+    </div>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <section>
+        <article class="container text-center">
+            <h2>Nos produits phares</h2>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card">
+                        <img src="{{ asset('images/huile-de-chebe-250ml.jpeg') }}" class="card-img-top" alt="Huile de Chebé"/>
+                        <div class="card-body">
+                            <h5 class="card-title">Huile de Chebé</h5>
+                            <h5>15€</h5>
+                            <a href="#" class="btn btn-primary">Découvrir</a>
+                        </div>
+                    </div>
+                </div>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/Users/PC/PROJET-CDA/src/Controller/HomeController.php</code></li>
-        <li>Your template at <code>C:/Users/PC/PROJET-CDA/templates/home/index.html.twig</code></li>
-    </ul>
-</div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <img src="{{ asset('images/huile-moringa-bio.webp') }}" class="card-img-top" alt="Huile de Moringa"/>
+                        <div class="card-body">
+                            <h5 class="card-title">Huile de Moringa</h5>
+                            <h5>15€</h5>
+                            <a href="#" class="btn btn-primary">Découvrir</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card">
+                        <img src="{{ asset('images/huile-de-ricin-200ml.webp') }}" class="card-img-top" alt="Huile de Ricin"/>
+                        <div class="card-body">
+                            <h5 class="card-title">Huile de Ricin</h5>
+                            <h5>15€</h5>
+                            <a href="#" class="btn btn-primary">Découvrir</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </section>
 {% endblock %}

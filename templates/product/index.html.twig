@@ -42,10 +42,12 @@
                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ product.id) }}">
                         <button type="submit" class="btn btn-danger btn-sm">🗑️ Supprimer</button>
                     </form>
+        
                 </td>
                 
             </tr>
             {% endfor %}
+            <a href="{{ path('admin_dashboard') }}" class="btn btn-secondary">🔙 Retour au Tableau de Bord</a>
         </tbody>
     </table>
 </div>
