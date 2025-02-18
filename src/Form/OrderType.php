@@ -9,6 +9,8 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\HttpFoundation\Request;
+use App\Form\ContactType;
 
 class OrderType extends AbstractType
 {
@@ -28,7 +30,7 @@ class OrderType extends AbstractType
                 'label' => 'Statut de la commande'
             ])
             ->add('save', SubmitType::class, [
-                'label' => '✅ Valider la commande'
+                'label' => ' Valider la commande'
             ]);
     }
 

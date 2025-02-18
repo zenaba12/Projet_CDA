@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Category;
+use App\Entity\Product;
 use App\Form\CategoryType;
 use App\Repository\CategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,7 +16,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/category')]
 class CategoryController extends AbstractController
 {
-    //Afficher la liste des catégories (accessible à tous)
+    // ✅ Afficher la liste des catégories (accessible à tous)
     #[Route('/', name: 'category_index', methods: ['GET'])]
     public function index(CategoryRepository $categoryRepository): Response
     {
@@ -25,16 +26,21 @@ class CategoryController extends AbstractController
         ]);
     }
 
-    // Ajouter une catégorie (ADMIN uniquement)
+    // ✅ Afficher les produits d'une catégorie
+    #[Route('/{id}', name: 'category_show', methods: ['GET'])]
+    public function show(Category $category): Response
+    {
+        return $this->render('category/show.html.twig', [
+            'category' => $category,
+            'products' => $category->getProducts(),
+        ]);
+    }
+
+    // ✅ Ajouter une catégorie (ADMIN uniquement)
     #[Route('/new', name: 'category_new', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_ADMIN')]
     public function new(Request $request, EntityManagerInterface $em): Response
     {
-        if (!$this->isGranted('ROLE_ADMIN')) {
-            $this->addFlash('error', 'Accès refusé.');
-            return $this->redirectToRoute('app_home');
-        }
-
         $category = new Category();
         $form = $this->createForm(CategoryType::class, $category);
         $form->handleRequest($request);
@@ -51,16 +57,11 @@ class CategoryController extends AbstractController
         ]);
     }
 
-    // Modifier une catégorie (ADMIN uniquement)
+    // ✅ Modifier une catégorie (ADMIN uniquement)
     #[Route('/edit/{id}', name: 'category_edit', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_ADMIN')]
     public function edit(Request $request, Category $category, EntityManagerInterface $em): Response
     {
-        if (!$this->isGranted('ROLE_ADMIN')) {
-            $this->addFlash('error', 'Accès refusé.');
-            return $this->redirectToRoute('app_home');
-        }
-
         $form = $this->createForm(CategoryType::class, $category);
         $form->handleRequest($request);
 
@@ -75,16 +76,11 @@ class CategoryController extends AbstractController
         ]);
     }
 
-    //Supprimer une catégorie (ADMIN uniquement)
+    // ✅ Supprimer une catégorie (ADMIN uniquement)
     #[Route('/delete/{id}', name: 'category_delete', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN')]
     public function delete(Category $category, EntityManagerInterface $em, Request $request): Response
     {
-        if (!$this->isGranted('ROLE_ADMIN')) {
-            $this->addFlash('error', 'Accès refusé.');
-            return $this->redirectToRoute('app_home');
-        }
-
         if ($this->isCsrfTokenValid('delete' . $category->getId(), $request->request->get('_token'))) {
             $em->remove($category);
             $em->flush();

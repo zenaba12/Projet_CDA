@@ -1,8 +1,29 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Contact{% endblock %}
+{% block title %} Contact{% endblock %}
 
 {% block body %}
-<h1>📞 Contactez-nous</h1>
-<p>Remplissez le formulaire ci-dessous pour nous contacter.</p>
+<div class="container mt-4">
+    <h1> Contactez-nous</h1>
+    <p>Remplissez le formulaire ci-dessous pour nous contacter.</p>
+
+    {{ form_start(form) }}
+        <div class="mb-3">
+            {{ form_label(form.name, 'Nom') }}
+            {{ form_widget(form.name, { 'attr': {'class': 'form-control'} }) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.email, 'Email') }}
+            {{ form_widget(form.email, { 'attr': {'class': 'form-control'} }) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.message, 'Message') }}
+            {{ form_widget(form.message, { 'attr': {'class': 'form-control', 'rows': 5} }) }}
+        </div>
+
+        
+    {{ form_end(form) }}
+</div>
 {% endblock %}

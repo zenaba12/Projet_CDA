@@ -4,14 +4,29 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-
+use App\Form\ContactType;
+use App\Entity\Contact;
 class MainController extends AbstractController
 {
     #[Route('/contact', name: 'contact')]
-    public function contact(): Response
+    public function contact(Request $request): Response
     {
-        return $this->render('main/contact.html.twig');
+        // Créer le formulaire
+        $form = $this->createForm(ContactType::class);
+
+        // Gestion de la requête
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->addFlash('success', 'Votre message a bien été envoyé !');
+            return $this->redirectToRoute('contact');
+        }
+
+        return $this->render('main/contact.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 
     #[Route('/faq', name: 'faq')]
@@ -31,6 +46,6 @@ class MainController extends AbstractController
     {
         return $this->render('main/mentions_legales.html.twig');
     }
-    
+
     }
 

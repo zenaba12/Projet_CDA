@@ -1,50 +1,170 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Accueil - Ma Boutique{% endblock %}
+{% block title %}Accueil{% endblock %}
 
-{% block content %}
-    <div class="image text-center py-5">
-        <h2>Bienvenue sur mon shop !</h2>
-        <a class="btn btn-primary" href="{{ path('product_index') }}">Découvrir le catalogue</a>
+{% block body %}
+
+<!--  BANNIÈRE D'ACCUEIL -->
+<section class="banner" style="background-image: url('{{ asset('images/accuei.jpg') }}')">
+    <h3 class="display-3 fw-bold">Bienvenue sur Notre Boutique</h3>
+</section>
+
+
+
+<!-- IMAGE + TEXTE AVEC BOUTON -->
+<section class="container my-5">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <img src="{{ asset('images/savoir3.jpg') }}" class="img-fluid rounded" alt="Produits Naturels">
+        </div>
+        <div class="col-md-6">
+            <h2>Découvrez nos produits naturels pour vos cheveux</h2>
+            <p>Nos produits capillaires sont spécialement conçus pour lutter contre la chute des cheveux et stimuler leur pousse.</p>
+            <p>Nos produits capillaires sont spécialement conçus pour lutter contre la chute des cheveux et stimuler leur pousse.</p>
+            <p>Nos produits capillaires sont spécialement conçus pour lutter contre la chute des cheveux et stimuler leur pousse.</p>
+            <a href="{{ path('category_index') }}" class="btn btn-secondary"> Découvrir</a>
+        </div>
     </div>
+</section>
 
-    <section>
-        <article class="container text-center">
-            <h2>Nos produits phares</h2>
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="card">
-                        <img src="{{ asset('images/huile-de-chebe-250ml.jpeg') }}" class="card-img-top" alt="Huile de Chebé"/>
-                        <div class="card-body">
-                            <h5 class="card-title">Huile de Chebé</h5>
-                            <h5>15€</h5>
-                            <a href="#" class="btn btn-primary">Découvrir</a>
-                        </div>
-                    </div>
-                </div>
+<!-- IMAGE + TEXTE AVEC BOUTON -->
+<section class="container my-5">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <img src="{{ asset('images/image.jpg.jpg') }}" class="img-fluid rounded" alt="Produits Naturels">
+        </div>
+        <div class="col-md-6">
+            <h2>Découvrez nos produits naturels pour vos cheveux</h2>
+            <p>Nos produits capillaires sont spécialement conçus pour lutter contre la chute des cheveux et stimuler leur pousse.</p>
+            <p>Nos produits capillaires sont spécialement conçus pour lutter contre la chute des cheveux et stimuler leur pousse.</p>
+            <p>Nos produits capillaires sont spécialement conçus pour lutter contre la chute des cheveux et stimuler leur pousse.</p>
+            <a href="{{ path('category_index') }}" class="btn btn-secondary"> Découvrir</a>
+        </div>
+    </div>
+</section>
 
-                <div class="col-md-4">
-                    <div class="card">
-                        <img src="{{ asset('images/huile-moringa-bio.webp') }}" class="card-img-top" alt="Huile de Moringa"/>
-                        <div class="card-body">
-                            <h5 class="card-title">Huile de Moringa</h5>
-                            <h5>15€</h5>
-                            <a href="#" class="btn btn-primary">Découvrir</a>
-                        </div>
-                    </div>
-                </div>
+<!-- IMAGE + TEXTE AVEC BOUTON -->
+<section class="container my-5">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <img src="{{ asset('images/savoir3.jpg') }}" class="img-fluid rounded" alt="Produits Naturels">
+        </div>
+        <div class="col-md-6">
+            <h2>Découvrez nos produits naturels pour vos cheveux</h2>
+            <p>Nos produits capillaires sont spécialement conçus pour lutter contre la chute des cheveux et stimuler leur pousse.</p>
+            <p>Nos produits capillaires sont spécialement conçus pour lutter contre la chute des cheveux et stimuler leur pousse.</p>
+            <p>Nos produits capillaires sont spécialement conçus pour lutter contre la chute des cheveux et stimuler leur pousse.</p>
+            <a href="{{ path('category_index') }}" class="btn btn-secondary"> Découvrir</a>
+        </div>
+    </div>
+</section>
 
-                <div class="col-md-4">
-                    <div class="card">
-                        <img src="{{ asset('images/huile-de-ricin-200ml.webp') }}" class="card-img-top" alt="Huile de Ricin"/>
-                        <div class="card-body">
-                            <h5 class="card-title">Huile de Ricin</h5>
-                            <h5>15€</h5>
-                            <a href="#" class="btn btn-primary">Découvrir</a>
-                        </div>
-                    </div>
+<!--  FAQ (QUESTIONS RÉDUCTIBLES) -->
+<section class="container my-5">
+    <h2 class="text-center">Foire Aux Questions</h2>
+    <div class="accordion" id="faqAccordion">
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#question2">
+                    Conviennent-ils à tous types de cheveux ?
+                </button>
+            </h2>
+            <div id="question2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    <p> Nos soins sont adaptés à tous types de cheveux, qu'ils soient bouclés, lisses ou crépus.</p>
                 </div>
             </div>
-        </article>
-    </section>
+        </div>
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#question2">
+                    Conviennent-ils à tous types de cheveux ?
+                </button>
+            </h2>
+            <div id="question2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    <p> Nos soins sont adaptés à tous types de cheveux, qu'ils soient bouclés, lisses ou crépus.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#question2">
+                    Conviennent-ils à tous types de cheveux ?
+                </button>
+            </h2>
+            <div id="question2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    <p> Nos soins sont adaptés à tous types de cheveux, qu'ils soient bouclés, lisses ou crépus.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#question2">
+                    Conviennent-ils à tous types de cheveux ?
+                </button>
+            </h2>
+            <div id="question2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    <p> Nos soins sont adaptés à tous types de cheveux, qu'ils soient bouclés, lisses ou crépus.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#question2">
+                    Conviennent-ils à tous types de cheveux ?
+                </button>
+            </h2>
+            <div id="question2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    <p> Nos soins sont adaptés à tous types de cheveux, qu'ils soient bouclés, lisses ou crépus.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#question2">
+                    Conviennent-ils à tous types de cheveux ?
+                </button>
+            </h2>
+            <div id="question2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    <p> Nos soins sont adaptés à tous types de cheveux, qu'ils soient bouclés, lisses ou crépus.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ⭐ AVIS CLIENTS -->
+<section class="container my-5">
+    <h2 class="text-center">⭐ Avis de nos clients</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card p-3">
+                <p>"Excellent produit, mes cheveux sont beaucoup plus forts !"</p>
+                <strong>— Sarah</strong>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-3">
+                <p> J'ai vu une différence dès les premières utilisations.</p>
+                <strong>— Ali</strong>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-3">
+                <p> Livraison rapide et produits efficaces, je recommande </p>
+                <strong>— Nadia</strong>
+            </div>
+        </div>
+    </div>
+</section>
+
 {% endblock %}
