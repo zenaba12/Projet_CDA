@@ -175,6 +175,15 @@ class ProductController extends AbstractController
         $this->addFlash('success', 'Produit ajouté au panier.');
         return $this->redirectToRoute('cart_show');
     }
+
+    #[Route('/product/{id}', name: 'product_show')]
+public function show(Product $product): Response
+{
+    return $this->render('product/show.html.twig', [
+        'product' => $product,
+    ]);
+}
+
    
 }
 

@@ -1,16 +1,46 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-<h1>👨‍💼 Tableau de bord Administrateur</h1>
+{% if is_granted('ROLE_ADMIN') %}
+    <div class="container mt-4">
+        <h1 class="text-center text-primary">👨‍💼 Tableau de bord Administrateur</h1>
 
-<ul>
-<a href="{{ path('admin_dashboard') }}" class="btn btn-secondary">🔙 Retour au Tableau de Bord</a>
-<li><a href="{{ path('product_index') }}">📦 Gérer les Produits</a></li>
-<a href="{{ path('admin_dashboard') }}" class="btn btn-secondary">🔙 Retour au Tableau de Bord</a>
- <li><a href="{{ path('category_index') }}">📂 Gérer les Catégories</a></li
- <a href="{{ path('admin_dashboard') }}" class="btn btn-secondary">🔙 Retour au Tableau de Bord</a>
-<li><a href="{{ path('order_list') }}">🛒 Gérer les Commandes</a></li>
-<a href="{{ path('admin_dashboard') }}" class="btn btn-secondary">🔙 Retour au Tableau de Bord</a>
-<li><a href="{{ path('users_list') }}">👥 Gérer les Utilisateurs</a></li>
-</ul>
+        <table class="table table-bordered table-hover mt-4">
+            <thead class="table-dark text-center">
+                <tr>
+                    <th>📌 Section</th>
+                    <th>🔗 Action</th>
+                </tr>
+            </thead>
+            <tbody class="text-center">
+                <tr>
+                    <td><strong>📦 Produits</strong></td>
+                    <td><a href="{{ path('product_index') }}" class="btn btn-primary">Gérer les Produits</a></td>
+                </tr>
+                <tr>
+                    <td><strong>📂 Catégories</strong></td>
+                    <td><a href="{{ path('category_index') }}" class="btn btn-success">Gérer les Catégories</a></td>
+                </tr>
+                <tr>
+                    <td><strong>🛒 Commandes</strong></td>
+                    <td><a href="{{ path('order_list') }}" class="btn btn-warning">Gérer les Commandes</a></td>
+                </tr>
+                <tr>
+                    <td><strong>👥 Utilisateurs</strong></td>
+                    <td><a href="{{ path('users_list') }}" class="btn btn-info">Gérer les Utilisateurs</a></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="text-center mt-4">
+            <a href="{{ path('admin_dashboard') }}" class="btn btn-secondary">🔙 Retour au Tableau de Bord</a>
+        </div>
+    </div>
+
+{% else %}
+    <div class="container text-center mt-5">
+        <p class="text-danger fw-bold">🚫 Accès refusé. Vous devez être administrateur pour voir cette page.</p>
+        <a href="{{ path('app_home') }}" class="btn btn-primary">🏠 Retour à l'accueil</a>
+    </div>
+{% endif %}
 {% endblock %}

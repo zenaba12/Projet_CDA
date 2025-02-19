@@ -1,14 +1,13 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}Gestion des Produits{% endblock %}
+
 {% block body %}
-<div class="container">
-    <h1 class="my-4 text-center">🛍️ Liste des Produits</h1>
+<div class="container mt-4">
+    <h1>📦 Liste des Produits</h1>
+    <a href="{{ path('product_new') }}" class="btn btn-success mb-3">➕ Ajouter un Produit</a>
 
-    <div class="text-end mb-3">
-        <a href="{{ path('product_new') }}" class="btn btn-primary">➕ Ajouter un Produit</a>
-    </div>
-
-    <table class="table table-bordered table-striped text-center align-middle">
+    <table class="table table-bordered table-hover">
         <thead class="table-dark">
             <tr>
                 <th>Nom</th>
@@ -21,34 +20,27 @@
         </thead>
         <tbody>
             {% for product in products %}
-            <tr>
-                <td>{{ product.nom }}</td>
-                <td><strong>{{ product.prix }} €</strong></td>
-                <td>{{ product.description }}</td>
-                <td>{{ product.category.nom }}</td>
-                <td>
-                   <td>
-    {% if product.image %}
-        <img src="{{ asset('uploads/images/' ~ product.image) }}" class="product-img">
-    {% else %}
-        Pas d'image
-    {% endif %}
-</td>
-
-                </td>
-                <td>
-                    <a href="{{ path('product_edit', { id: product.id }) }}" class="btn btn-warning btn-sm">✏️ Modifier</a>
-                    <form action="{{ path('product_delete', { id: product.id }) }}" method="post" class="d-inline" onsubmit="return confirm('Confirmer la suppression ?');">
-                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ product.id) }}">
-                        <button type="submit" class="btn btn-danger btn-sm">🗑️ Supprimer</button>
-                    </form>
-        
-                </td>
-                
-            </tr>
+                <tr>
+                    <td>{{ product.nom }}</td>
+                    <td>{{ product.prix }}€</td>
+                    <td>{{ product.description|length > 50 ? product.description|slice(0, 50) ~ '...' : product.description }}</td>
+                    <td>{{ product.category.nom }}</td>
+                    <td>
+                        <img src="{{ asset('uploads/images/' ~ product.image) }}" class="img-thumbnail" width="100" alt="{{ product.nom }}">
+                    </td>
+                    <td>
+                        <a href="{{ path('product_edit', { id: product.id }) }}" class="btn btn-warning btn-sm">✏ Modifier</a>
+                        <form action="{{ path('product_delete', { id: product.id }) }}" method="POST" class="d-inline">
+                            <button type="submit" class="btn btn-danger btn-sm">🗑 Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
             {% endfor %}
-            <a href="{{ path('admin_dashboard') }}" class="btn btn-secondary">🔙 Retour au Tableau de Bord</a>
+    <a href="{{ path('admin_dashboard') }}" class="btn btn-secondary">🔙 Retour au Tableau de Bord</a>
         </tbody>
     </table>
 </div>
 {% endblock %}
+
+           
+        
