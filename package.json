@@ -4,7 +4,9 @@
     "@hotwired/stimulus-webpack-helpers": "^1.0.1",
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.3",
-    "core-js": "^3.40.0"
+    "core-js": "^3.40.0",
+    "jquery": "^3.7.1",
+    "sass": "^1.85.0"
   },
   "name": "projet-cda",
   "version": "1.0.0",
