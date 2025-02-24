@@ -15,14 +15,14 @@ class Category
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: false)] // ✅ Nom obligatoire
     private ?string $nom = null;
 
     /**
      * @var Collection<int, Product>
      */
     #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'category', cascade: ['remove'])]
-    private Collection $products; 
+    private Collection $products;
 
     public function __construct()
     {
@@ -55,7 +55,6 @@ class Category
     public function removeProduct(Product $product): static
     {
         if ($this->products->removeElement($product)) {
-            // set the owning side to null (unless already changed)
             if ($product->getCategory() === $this) {
                 $product->setCategory(null);
             }

@@ -12,7 +12,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+#[UniqueEntity(fields: ['email'], message: 'Un compte existe déjà avec cet email.')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -26,8 +26,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 100)]
     private ?string $prenom = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $date_de_naissance = null;
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $dateDeNaissance = null;
 
     #[ORM\Column(type: 'json')]
     private array $roles = [];
@@ -38,16 +38,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
-    #[ORM\ManyToMany(targetEntity: Product::class, mappedBy: 'user')]
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'user', cascade: ['remove'])]
     private Collection $comments;
 
-    #[ORM\OneToOne(targetEntity: Cart::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
     private ?Cart $cart = null;
 
-    /**
-     * @var Collection<int, Order>
-     */
-    #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'user')]
+    #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'user', cascade: ['remove'], orphanRemoval: true)]
     private Collection $orders;
 
     public function __construct()
@@ -85,29 +82,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getDateDeNaissance(): ?\DateTimeInterface
     {
-        return $this->date_de_naissance;
+        return $this->dateDeNaissance;
     }
 
-    public function setDateDeNaissance(\DateTimeInterface $date_de_naissance): static
+    public function setDateDeNaissance(?\DateTimeInterface $dateDeNaissance): static
     {
-        $this->date_de_naissance = $date_de_naissance;
+        $this->dateDeNaissance = $dateDeNaissance;
         return $this;
     }
 
     public function getRoles(): array
     {
+        // Toujours inclure ROLE_USER par défaut
         $roles = $this->roles;
         $roles[] = 'ROLE_USER';
         return array_unique($roles);
     }
 
-    public function setRoles(array $roles): self
+    public function setRoles(array $roles): static
     {
         $this->roles = $roles;
         return $this;
     }
 
-    public function getEmail(): ?string 
+    public function getEmail(): ?string
     {
         return $this->email;
     }
@@ -131,7 +129,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function eraseCredentials(): void
     {
-        // Supprimer les informations sensibles après l'authentification
+        // Cette méthode est vide, car Symfony l'exige pour effacer des informations sensibles
     }
 
     public function getUserIdentifier(): string
@@ -144,7 +142,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->cart;
     }
 
-    public function setCart(?Cart $cart): self
+    public function setCart(?Cart $cart): static
     {
         $this->cart = $cart;
         return $this;
@@ -174,9 +172,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, Order>
-     */
     public function getOrders(): Collection
     {
         return $this->orders;

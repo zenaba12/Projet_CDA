@@ -1,11 +1,11 @@
-<?php
+<?php 
 
-namespace App\Entity;
+namespace App\Entity; 
 
-use App\Repository\ProductRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ProductRepository; 
+use Doctrine\Common\Collections\ArrayCollection; 
+use Doctrine\Common\Collections\Collection; 
+use Doctrine\ORM\Mapping as ORM; 
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product
@@ -27,22 +27,22 @@ class Product
     #[ORM\Column]
     private ?int $stock = null;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $image = null;
+
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'product', cascade: ['remove'], orphanRemoval: true)]
     private Collection $comments;
-
+    
     #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'products')]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')] 
+    #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
 
     #[ORM\OneToMany(targetEntity: CartItem::class, mappedBy: 'product', cascade: ['remove'], orphanRemoval: true)]
     private Collection $cartItems;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $image = null;
+    #[ORM\OneToMany(targetEntity: OrderItem::class, mappedBy: 'product', cascade: ['remove'], orphanRemoval: true)]
+    private Collection $orderItems;
 
-    /**
-     * @var Collection<int, Order>
-     */
     #[ORM\ManyToMany(targetEntity: Order::class, mappedBy: 'products')]
     private Collection $orders;
 
@@ -50,131 +50,54 @@ class Product
     {
         $this->comments = new ArrayCollection();
         $this->cartItems = new ArrayCollection();
-        $this->orders = new ArrayCollection();
+        $this->orderItems = new ArrayCollection();
+        $this->orders = new ArrayCollection(); // ✅ Initialisation de `$orders`
     }
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    public function getId(): ?int { return $this->id; }
+    public function getNom(): ?string { return $this->nom; }
+    public function setNom(string $nom): static { $this->nom = $nom; return $this; }
+    
+    public function getDescription(): ?string { return $this->description; }
+    public function setDescription(string $description): static { $this->description = $description; return $this; }
 
-    public function getNom(): ?string
-    {
-        return $this->nom;
-    }
+    public function getPrix(): ?float { return $this->prix; }
+    public function setPrix(float $prix): static { $this->prix = $prix; return $this; }
 
-    public function setNom(string $nom): static
-    {
-        $this->nom = $nom;
-        return $this;
-    }
+    public function getStock(): ?int { return $this->stock; }
+    public function setStock(int $stock): static { $this->stock = $stock; return $this; }
 
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
+    public function getComments(): Collection { return $this->comments; }
+    public function addComment(Comment $comment): static 
+    { 
+        if (!$this->comments->contains($comment)) { 
+            $this->comments->add($comment); 
+            $comment->setProduct($this); 
+        } 
+        return $this; 
+    } 
 
-    public function setDescription(string $description): static
-    {
-        $this->description = $description;
-        return $this;
-    }
+    public function getCategory(): ?Category { return $this->category; }
+    public function setCategory(?Category $category): static { $this->category = $category; return $this; }
 
-    public function getPrix(): ?float
-    {
-        return $this->prix;
-    }
+    public function getCartItems(): Collection { return $this->cartItems; }
 
-    public function setPrix(float $prix): static
-    {
-        $this->prix = $prix;
-        return $this;
-    }
+    public function getImage(): ?string { return $this->image; }
+    public function setImage(?string $image): static { $this->image = $image; return $this; }
 
-    public function getStock(): ?int
-    {
-        return $this->stock;
-    }
-
-    public function setStock(int $stock): static
-    {
-        $this->stock = $stock;
-        return $this;
-    }
-
-    public function getComments(): Collection
-    {
-        return $this->comments;
-    }
-
-    public function addComment(Comment $comment): static
-    {
-        if (!$this->comments->contains($comment)) {
-            $this->comments->add($comment);
-            $comment->setProduct($this);
-        }
-        return $this;
-    }
-
-    public function removeComment(Comment $comment): static
-    {
-        if ($this->comments->removeElement($comment)) {
-            if ($comment->getProduct() === $this) {
-                $comment->setProduct(null);
-            }
-        }
-        return $this;
-    }
-
-    public function getCategory(): ?Category
-    {
-        return $this->category;
-    }
-
-    public function setCategory(?Category $category): static
-    {
-        $this->category = $category;
-        return $this;
-    }
-
-    public function getCartItems(): Collection
-    {
-        return $this->cartItems;
-    }
-
-    public function getImage(): ?string
-    {
-        return $this->image;
-    }
-
-    public function setImage(?string $image): static
-    {
-        $this->image = $image;
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Order>
-     */
-    public function getOrders(): Collection
-    {
-        return $this->orders;
-    }
-
+    public function getOrders(): Collection { return $this->orders; }
+    
     public function addOrder(Order $order): static
     {
         if (!$this->orders->contains($order)) {
             $this->orders->add($order);
-            $order->addProduct($this);
         }
         return $this;
     }
 
     public function removeOrder(Order $order): static
     {
-        if ($this->orders->removeElement($order)) {
-            $order->removeProduct($this);
-        }
+        $this->orders->removeElement($order);
         return $this;
     }
 }

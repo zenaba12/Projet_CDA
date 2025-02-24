@@ -26,17 +26,6 @@ class CategoryController extends AbstractController
         ]);
     }
 
-    // ✅ Afficher les produits d'une catégorie
-    #[Route('/{id}', name: 'category_show', methods: ['GET'])]
-    public function show(Category $category): Response
-    {
-        return $this->render('category/show.html.twig', [
-            'category' => $category,
-            'products' => $category->getProducts(),
-        ]);
-    }
-
-    // ✅ Ajouter une catégorie (ADMIN uniquement)
     #[Route('/new', name: 'category_new', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_ADMIN')]
     public function new(Request $request, EntityManagerInterface $em): Response
@@ -54,6 +43,17 @@ class CategoryController extends AbstractController
 
         return $this->render('category/form.html.twig', [
             'form' => $form->createView(),
+        ]);
+    }
+
+    
+    // ✅ Afficher les produits d'une catégorie
+    #[Route('/{id}', name: 'category_show', methods: ['GET'])]
+    public function show(Category $category): Response
+    {
+        return $this->render('category/show.html.twig', [
+            'category' => $category,
+            'products' => $category->getProducts(),
         ]);
     }
 

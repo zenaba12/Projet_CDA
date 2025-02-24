@@ -16,21 +16,26 @@ class Comment
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::TEXT)] // ✅ Changer en "TEXT" pour du texte long
+    #[ORM\Column(type: Types::TEXT)] // ✅ Texte long pour le contenu
     private ?string $contenu = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)] // ✅ Correction : Utiliser DATETIME_MUTABLE pour les dates et heures
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)] // ✅ Date et heure du commentaire
     private ?\DateTimeInterface $dateTime = null;
 
     // ✅ Relation avec User (auteur du commentaire)
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'comments')]
-    #[ORM\JoinColumn(nullable: false)] // ✅ Un commentaire doit être lié à un utilisateur
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')] // ✅ Suppression automatique des commentaires si l'utilisateur est supprimé
     private ?User $user = null;
 
-    // ✅ Relation avec Product (le produit commenté)
+    // ✅ Relation avec Product (produit commenté)
     #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'comments')]
-    #[ORM\JoinColumn(nullable: false)] // ✅ Un commentaire doit être lié à un produit
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')] // ✅ Suppression automatique des commentaires si le produit est supprimé
     private ?Product $product = null;
+
+    public function __construct()
+    {
+        $this->dateTime = new \DateTime(); // ✅ Ajout automatique de la date du commentaire
+    }
 
     public function getId(): ?int { return $this->id; }
 

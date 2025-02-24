@@ -15,12 +15,12 @@ class Cart
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\OneToMany(targetEntity: CartItem::class, mappedBy: 'cart', cascade: ['persist', 'remove'])]
-    private Collection $cartItems;
-
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')] // 🔹 Supprime le panier si l'utilisateur est supprimé
+    #[ORM\OneToOne(inversedBy: 'cart', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?User $user = null;
+
+    #[ORM\OneToMany(targetEntity: CartItem::class, mappedBy: 'cart', cascade: ['remove'], orphanRemoval: true)]
+    private Collection $cartItems;
 
     public function __construct()
     {

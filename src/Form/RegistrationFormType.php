@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Form;
 
 use App\Entity\User;
@@ -25,18 +24,18 @@ class RegistrationFormType extends AbstractType
                 'label' => 'Prénom',
                 'attr' => ['class' => 'form-control']
             ])
-            ->add('date_de_naissance', DateType::class, [
+            ->add('dateDeNaissance', DateType::class, [
                 'label' => 'Date de naissance',
                 'widget' => 'single_text',
                 'attr' => ['class' => 'form-control']
             ])
-        
             ->add('email', EmailType::class, [
                 'label' => 'Email',
                 'attr' => ['class' => 'form-control']
             ])
-            ->add('Password', PasswordType::class, [
+            ->add('plainPassword', PasswordType::class, [ // ✅ Doit être ajouté
                 'label' => 'Mot de passe',
+                'mapped' => false, // ✅ Ne sera pas stocké directement en base
                 'attr' => ['class' => 'form-control']
             ])
             ->add('agreeTerms', CheckboxType::class, [

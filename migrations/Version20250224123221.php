@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250209075710 extends AbstractMigration
+final class Version20250224123221 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,16 +20,12 @@ final class Version20250209075710 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('DROP INDEX UNIQ_8D93D6495126AC48 ON user');
-        $this->addSql('ALTER TABLE user CHANGE mail email VARCHAR(100) NOT NULL');
-        $this->addSql('CREATE UNIQUE INDEX UNIQ_8D93D649E7927C74 ON user (email)');
+        $this->addSql('ALTER TABLE category ADD pour_enfant TINYINT(1) DEFAULT 0 NOT NULL');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('DROP INDEX UNIQ_8D93D649E7927C74 ON user');
-        $this->addSql('ALTER TABLE user CHANGE email mail VARCHAR(100) NOT NULL');
-        $this->addSql('CREATE UNIQUE INDEX UNIQ_8D93D6495126AC48 ON user (mail)');
+        $this->addSql('ALTER TABLE category DROP pour_enfant');
     }
 }
