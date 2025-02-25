@@ -13,12 +13,12 @@ class OrderItem
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')] // ✅ Assure la suppression des items si le produit est supprimé
+    #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'orderItems')]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')] 
     private ?Product $product = null;
 
-    #[ORM\ManyToOne(inversedBy: 'orderItems')]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')] //  Assure la suppression des items si la commande est supprimée
+    #[ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'orderItems')]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')] 
     private ?Order $order = null;
 
     #[ORM\Column]
@@ -35,4 +35,3 @@ class OrderItem
     public function getQuantity(): int { return $this->quantity; }
     public function setQuantity(int $quantity): static { $this->quantity = $quantity; return $this; }
 }
-

@@ -58,3 +58,98 @@ header {
 .bg-light {
   background-color: #75b8bf !important;
 }
+/*  Style du titre des catégories */
+.category-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+/*  Conteneur des produits avec FLEXBOX */
+.products-container {
+  display: flex; /* Alignement horizontal */
+  flex-wrap: wrap; /* Permet de revenir à la ligne si nécessaire */
+  gap: 20px; /* Espacement entre les produits */
+  justify-content: flex-start; /* Alignement à gauche */
+}
+
+/*  Style des cartes produits (DESKTOP) */
+.product-card {
+  width: calc(33.33% - 20px); /* 3 produits par ligne sur écran large */
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover {
+  transform: scale(1.05); /* Effet de zoom au survol */
+}
+
+/*  Correction de la taille des images */
+.product-image {
+  width: 100%;
+  height: 400px;
+  object-fit: cover; /* Recadre l'image sans la déformer */
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+/* Style général du texte des cartes */
+.card-body {
+  padding: 15px;
+  text-align: center;
+}
+
+/*  RESPONSIVE DESIGN */
+
+/* 📱 Pour les écrans TABLETTES (768px - 1024px) */
+@media screen and (max-width: 1024px) {
+  .product-card {
+      width: calc(50% - 20px); /* 2 produits par ligne */
+  }
+}
+
+/*  Pour les téléphones (≤ 768px) */
+@media screen and (max-width: 768px) {
+  .product-card {
+      width: 100%; /* 1 produit par ligne */
+  }
+}
+
+
+/*  Style des images des carousels */
+.carousel-image {
+  width: 100%;
+  max-height:250px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/*  Style des étoiles de notation */
+.stars {
+  color: gold;
+  font-size: 20px;
+}
+
+/*  Style des carousels */
+.carousel {
+  max-width: 600px; /* Taille max du carousel */
+  margin: auto; /* Centrer */
+}
+
+/*  Améliorer le style des boutons du carousel */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  padding: 10px;
+}
+
+/*  Redimensionner les images du carousel */
+.carousel-item img {
+  width: 100%; /* L'image prend toute la largeur du carousel */
+
+}
+

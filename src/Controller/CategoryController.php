@@ -6,6 +6,7 @@ use App\Entity\Category;
 use App\Entity\Product;
 use App\Form\CategoryType;
 use App\Repository\CategoryRepository;
+use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,16 +17,38 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/category')]
 class CategoryController extends AbstractController
 {
-    // ✅ Afficher la liste des catégories (accessible à tous)
     #[Route('/', name: 'category_index', methods: ['GET'])]
-    public function index(CategoryRepository $categoryRepository): Response
+public function index(CategoryRepository $categoryRepository): Response
+{
+    $categories = $categoryRepository->findAll();
+
+    return $this->render('category/catalogue.html.twig', [
+        'categories' => $categories,
+    ]);
+}
+
+    // ✅ Afficher le catalogue directement avec les produits par catégorie
+    #[Route('/catalogue', name: 'catalogue', methods: ['GET'])]
+    public function catalogue(CategoryRepository $categoryRepository): Response
     {
         $categories = $categoryRepository->findAll();
-        return $this->render('category/index.html.twig', [
+
+        return $this->render('category/catalogue.html.twig', [
             'categories' => $categories,
         ]);
     }
 
+    // ✅ Afficher les produits d'une seule catégorie
+    #[Route('/{id}', name: 'category_show', methods: ['GET'])]
+    public function show(Category $category): Response
+    {
+        return $this->render('category/show.html.twig', [
+            'category' => $category,
+            'products' => $category->getProducts(),
+        ]);
+    }
+
+    // ✅ Ajouter une catégorie (ADMIN uniquement)
     #[Route('/new', name: 'category_new', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_ADMIN')]
     public function new(Request $request, EntityManagerInterface $em): Response
@@ -38,22 +61,11 @@ class CategoryController extends AbstractController
             $em->persist($category);
             $em->flush();
             $this->addFlash('success', 'Catégorie ajoutée avec succès.');
-            return $this->redirectToRoute('category_index');
+            return $this->redirectToRoute('catalogue');
         }
 
         return $this->render('category/form.html.twig', [
             'form' => $form->createView(),
-        ]);
-    }
-
-    
-    // ✅ Afficher les produits d'une catégorie
-    #[Route('/{id}', name: 'category_show', methods: ['GET'])]
-    public function show(Category $category): Response
-    {
-        return $this->render('category/show.html.twig', [
-            'category' => $category,
-            'products' => $category->getProducts(),
         ]);
     }
 
@@ -68,7 +80,7 @@ class CategoryController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $em->flush();
             $this->addFlash('success', 'Catégorie mise à jour avec succès.');
-            return $this->redirectToRoute('category_index');
+            return $this->redirectToRoute('catalogue');
         }
 
         return $this->render('category/form.html.twig', [
@@ -87,6 +99,6 @@ class CategoryController extends AbstractController
             $this->addFlash('success', 'Catégorie supprimée avec succès.');
         }
 
-        return $this->redirectToRoute('category_index');
+        return $this->redirectToRoute('catalogue');
     }
 }

@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Catalogue{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <h1 class="text-center">🛍 Notre Catalogue</h1>
+
+    {% for category in categories %}
+        <!-- Nom de la catégorie -->
+        <h2 class="category-title">{{ category.nom }}</h2>
+
+        <!-- Conteneur FLEXBOX pour forcer l'affichage horizontal -->
+        <div class="products-container">
+            {% for product in category.products %}
+                <div class="product-card">
+                    <div class="card">
+                        <!-- Image du produit -->
+                        <img src="{{ asset('uploads/images/' ~ product.image) }}" class="product-image" alt="{{ product.nom }}">
+
+                        <div class="card-body">
+                            <!-- Nom du produit -->
+                            <h5 class="card-title">{{ product.nom }}</h5>
+
+                            <!-- Prix du produit -->
+                            <p class="fw-bold text-primary">{{ product.prix }}€</p>
+
+                            <!-- Bouton pour voir les détails -->
+                            <a href="{{ path('product_show', { id: product.id }) }}" class="btn btn-primary">Voir plus</a>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <p class="text-center">Aucun produit disponible dans cette catégorie.</p>
+            {% endfor %}
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -8,13 +8,23 @@
         <div class="col-md-6">
             <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
                 <div class="carousel-inner">
+                    <!-- Image principale du produit -->
                     <div class="carousel-item active">
-                        <img src="{{ asset('images/huile-de-fenugrec.webp' ~ product.image) }}" class="d-block w-100" alt="{{ product.nom }}">
+                       <img src="{{ asset('uploads/images/' ~ product.image) }}" class="d-block w-100" alt="{{ product.nom }}">
+
+                    </div>
+                    <!-- Autres images du carousel -->
+                    <div class="carousel-item">
+                        <img src="{{ asset('images/2.png') }}" class="d-block w-100" alt="Autre image">
                     </div>
                     <div class="carousel-item">
-                        <img src="{{ asset('images/produit2.jpg') }}" class="d-block w-100" alt="Autre image">
+                        <img src="{{ asset('images/3.png') }}" class="d-block w-100" alt="Autre image">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="{{ asset('images/4.png') }}" class="d-block w-100" alt="Autre image">
                     </div>
                 </div>
+                <!-- Boutons de navigation du carousel -->
                 <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon"></span>
                 </button>
@@ -27,9 +37,113 @@
         <div class="col-md-6">
             <h2>{{ product.nom }}</h2>
             <p>{{ product.description }}</p>
-            <h4 class="fw-bold">{{ product.prix }}€</h4>
+
+<p> <b>Repousse & Fortification</b> – Stimule la croissance et renforce les cheveux</p>
+<p> <b>Hydratation Intense</b> – Nourrit en profondeur pour des cheveux brillants</p>
+<p><b> Stoppe la Chute</b> – Protège contre la casse et la calvitie</p>
+
+<!--  FAQ (QUESTIONS RÉDUCTIBLES) -->
+<section class="container my-5">
+    <div class="accordion" id="faqAccordion">
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#question2">
+                    <h5>Livraison Offerte Colissimo</h5>
+                </button>
+            </h2>
+            <div id="question2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    <p> Expédition rapide : 24/48h</p>
+  <p>Livraison Colissimo Offerte : 5-6 jours ouvrés</p>
+
+<p>Chez nous, c'est une affaire de famille :
+ notre petite équipe s'engage à faire de son mieux pour que votre commande vous parvienne dans les délais les plus courts.</p>
+                </div>
+            </div>
+        </div>
+
+         <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#question2">
+                    <h5>Garantie 100% Satisfait</h5>
+                </button>
+            </h2>
+            <div id="question2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    <p> Essayez notre huile sans risque <b>pendant 90 jours</b>. Si vous n'êtes pas entièrement <b>satisfait</b>, nous vous <b>rembourserons intégralement</b> contre le renvoi du produit.</p>
+                </div>
+            </div>
+        </div>
+
+         <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#question2">
+                    <h5>Paiement sécurisé</h5>
+                </button>
+            </h2>
+            <div id="question2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    <p> Effectuez vos achats en toute confiance grâce à notre système de paiement <b>100% sécurisé</b>.</p>
+                </div>
+            </div>
+        </div>
+
+        </div>
+        </br>
+            <h4 class="fw-bold">{{ product.prix }}€</h4></br>
             <a href="{{ path('cart_add', { id: product.id }) }}" class="btn btn-success">🛒 Ajouter au Panier</a>
         </div>
     </div>
 </div>
+
+<!-- IMAGE + TEXTE AVEC BOUTON -->
+<section class="container my-5">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <img src="{{ asset('images/greffe.png') }}" class="img-fluid rounded" alt="Produits Naturels">
+        </div>
+        <div class="col-md-6">
+            <h2> Imaginez Si la Greffe de Cheveux N'Était Pas la Meilleure Solution ?</h2>
+            <p>Vous décidez de faire une greffe de cheveux, espérant retrouver une chevelure dense et naturelle. Mais après l’intervention, des douleurs persistantes, une cicatrice visible et un résultat décevant apparaissent. Mal réalisée, la greffe peut épuiser votre capital capillaire, rendant toute correction difficile. De plus, les risques d’infection, le coût élevé et les complications médicales en font une option risquée.
+Avant de choisir la chirurgie, pensez aux solutions naturelles comme l’huile de Batana, reconnue pour stimuler la repousse et renforcer les cheveux sans danger</p>
+            
+        </div>
+    </div>
+</section>
+
+<!-- IMAGE + TEXTE AVEC BOUTON -->
+<section class="container my-5">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <img src="{{ asset('images/avis.png') }}" class="img-fluid rounded" alt="Produits Naturels">
+        </div>
+        <div class="col-md-6">
+            <h6>  NE LAISSEZ PLUS LA CHUTE ABÎMER VOS CHEVEUX !</h6>
+            <h2>4 raisons de choisir l’huile de Batana de RevalHair</h2>
+            <p> 💪 Repousse & Fortification : Riche en nutriments essentiels, l’huile de Batana nourrit le cuir chevelu et stimule la croissance pour des cheveux plus épais et plus résistants.</p>
+
+ <p>💧 Hydratation Profonde : Sa texture légère pénètre en profondeur pour restaurer l’hydratation et apporter un éclat naturel à vos cheveux.</p>
+
+<p>🌿 100% Naturelle & Pure : Extraite selon un procédé traditionnel, notre huile est sans additifs ni produits chimiques, idéale pour tous types de cheveux.</p>
+
+<p>🛡️ Stoppe la Casse & la Chute : Un véritable bouclier contre la calvitie et la sécheresse, elle protège et répare vos cheveux en profondeur</p>
+            
+        </div>
+    </div>
+</section>
+
+<!-- IMAGE + TEXTE AVEC BOUTON -->
+<section class="container my-5">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <img src="{{ asset('images/5.png') }}" class="img-fluid rounded" alt="Produits Naturels">
+        </div>
+        <div class="col-md-6">
+            <h6>N°1 DES VENTES POUR LA CROISSANCE DES CHEVEUX !</h6>
+            <h2>L'Huile de Batana : Un Secret de Beauté Ancestral</h2>
+            <p>Imaginez-vous devant le miroir, constatant <b>une chute de cheveux de plus en plus visible<b/>… Vos cheveux deviennent fins, secs et perdent leur éclat. Avec l'huile de Batana RevalHair, <b>dites STOP à ces problèmes !</b> Sa formule naturelle nourrit et fortifie la fibre capillaire, apportant des nutriments essentiels pour des cheveux plus épais et résistants. En profondeur, elle hydrate intensément, redonnant douceur et brillance aux cheveux abîmés. Grâce à ses propriétés uniques, elle aide également à stopper la chute et à stimuler la repousse, combattant efficacement la calvitie.  Dès la première utilisation, sentez la différence et offrez à vos cheveux le soin qu’ils méritent ! </p>
+            
+        </div>
+    </div>
+</section>
 {% endblock %}

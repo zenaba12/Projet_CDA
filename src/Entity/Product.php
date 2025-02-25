@@ -43,15 +43,11 @@ class Product
     #[ORM\OneToMany(targetEntity: OrderItem::class, mappedBy: 'product', cascade: ['remove'], orphanRemoval: true)]
     private Collection $orderItems;
 
-    #[ORM\ManyToMany(targetEntity: Order::class, mappedBy: 'products')]
-    private Collection $orders;
-
     public function __construct()
     {
         $this->comments = new ArrayCollection();
         $this->cartItems = new ArrayCollection();
         $this->orderItems = new ArrayCollection();
-        $this->orders = new ArrayCollection(); // ✅ Initialisation de `$orders`
     }
 
     public function getId(): ?int { return $this->id; }
@@ -85,19 +81,5 @@ class Product
     public function getImage(): ?string { return $this->image; }
     public function setImage(?string $image): static { $this->image = $image; return $this; }
 
-    public function getOrders(): Collection { return $this->orders; }
-    
-    public function addOrder(Order $order): static
-    {
-        if (!$this->orders->contains($order)) {
-            $this->orders->add($order);
-        }
-        return $this;
-    }
-
-    public function removeOrder(Order $order): static
-    {
-        $this->orders->removeElement($order);
-        return $this;
-    }
+    public function getOrderItems(): Collection { return $this->orderItems; }
 }
