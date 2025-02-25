@@ -27,7 +27,7 @@ public function index(CategoryRepository $categoryRepository): Response
     ]);
 }
 
-    // ✅ Afficher le catalogue directement avec les produits par catégorie
+    //  Afficher le catalogue directement avec les produits par catégorie
     #[Route('/catalogue', name: 'catalogue', methods: ['GET'])]
     public function catalogue(CategoryRepository $categoryRepository): Response
     {
@@ -38,7 +38,7 @@ public function index(CategoryRepository $categoryRepository): Response
         ]);
     }
 
-    // ✅ Afficher les produits d'une seule catégorie
+    //  Afficher les produits d'une seule catégorie
     #[Route('/{id}', name: 'category_show', methods: ['GET'])]
     public function show(Category $category): Response
     {
@@ -48,7 +48,7 @@ public function index(CategoryRepository $categoryRepository): Response
         ]);
     }
 
-    // ✅ Ajouter une catégorie (ADMIN uniquement)
+    //  Ajouter une catégorie (ADMIN uniquement)
     #[Route('/new', name: 'category_new', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_ADMIN')]
     public function new(Request $request, EntityManagerInterface $em): Response
@@ -69,7 +69,9 @@ public function index(CategoryRepository $categoryRepository): Response
         ]);
     }
 
-    // ✅ Modifier une catégorie (ADMIN uniquement)
+    
+
+    // Modifier une catégorie (ADMIN uniquement)
     #[Route('/edit/{id}', name: 'category_edit', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_ADMIN')]
     public function edit(Request $request, Category $category, EntityManagerInterface $em): Response
@@ -88,7 +90,7 @@ public function index(CategoryRepository $categoryRepository): Response
         ]);
     }
 
-    // ✅ Supprimer une catégorie (ADMIN uniquement)
+    // Supprimer une catégorie (ADMIN uniquement)
     #[Route('/delete/{id}', name: 'category_delete', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN')]
     public function delete(Category $category, EntityManagerInterface $em, Request $request): Response

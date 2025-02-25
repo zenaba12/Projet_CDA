@@ -20,10 +20,9 @@
           <ul class="navbar-nav">
             <li class="nav-item"><a class="nav-link" href="{{ path('app_home') }}"> Accueil</a></li>
             <li class="nav-item"><a class="nav-link" href="{{ path('catalogue') }}"> Catalogue</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ path('about') }}"> À propos</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ path('contact') }}"> Contact</a></li>
-           <li class="nav-item"><a class="nav-link" href="{{ path('faq') }}">  FAQ </a></li>
-       
+            <li class="nav-item"><a class="nav-link" href="{{ path('faq') }}">  FAQ </a></li>
+           <li class="nav-item"><a class="nav-link" href="{{ path('contact') }}"> Contact</a></li>
+           <li class="nav-item"><a class="nav-link" href="{{ path('about') }}"> À propos</a></li>
             {% if not app.user %}
               <li class="nav-item"><a class="nav-link" href="{{ path('app_login') }}"> Connexion</a></li>
               <li class="nav-item"><a class="nav-link" href="{{ path('app_register') }}"> S'inscrire</a></li>
@@ -40,7 +39,7 @@
 
       <!-- Icône du panier -->
       <a href="{{ path('cart_show') }}" class="d-flex align-items-center">
-        <img src="{{ asset('images/panier.jpg.png') }}" alt="Panier" height="30">
+        <img src="{{ asset('images/panier.png') }}" alt="Panier" height="30">
       </a>
     </div>
   </div>

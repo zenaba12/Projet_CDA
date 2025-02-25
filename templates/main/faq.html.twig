@@ -3,11 +3,10 @@
 {% block title %}FAQ{% endblock %}
 
 {% block body %}
-<h1> Foire Aux Questions</h1>
-<p>Retrouvez ici les réponses aux questions les plus fréquentes.</p>
+
 
 <section class="container my-5">
-    <h2 class="text-center">Foire Aux Questions</h2>
+    <h2 class="text-center">Nos huiles</h2>
     <div class="accordion" id="faqAccordion">
         
         <!-- Question 1 -->
@@ -54,8 +53,40 @@
 
     </div>
 </section>
+<section>
+<h2 class="text-center">Livraison & Retours</h2>
+    <div class="accordion" id="faqAccordion">
+        
+        <!-- Question 1 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#question1">
+                    Quels sont les bienfaits de vos produits ?
+                </button>
+            </h2>
+            <div id="question1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    <p>Nos produits nourrissent, hydratent et renforcent les cheveux.</p>
+                </div>
+            </div>
+        </div>
 
-<!-- ✅ Inclusion de Bootstrap JS pour que l'accordéon fonctionne -->
+         <!-- Question 2 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#question2">
+                    Conviennent-ils à tous types de cheveux ?
+                </button>
+            </h2>
+            <div id="question2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    <p>Nos soins sont adaptés à tous types de cheveux : bouclés, lisses, crépus...</p>
+                </div>
+            </div>
+        </div>
+</section>
+
+<!--  Inclusion de Bootstrap JS pour que l'accordéon fonctionne -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 {% endblock %}

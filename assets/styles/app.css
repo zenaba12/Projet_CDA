@@ -1,10 +1,11 @@
-html,
+
 body {
   height: 100%;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
+  background-color: white;
 }
 
 main {
@@ -12,7 +13,7 @@ main {
 }
 
 footer {
-  background-color: #343a40;
+  background-color: #E6A4B4!important;
   color: white;
   text-align: center;
   padding: 10px 0;
@@ -33,10 +34,12 @@ header {
   background-color: #ffc107 !important;
 }
 
+/* 📌 Bannière Accueil */
 .banner {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  position: relative;
   height: 400px;
   display: flex;
   align-items: center;
@@ -45,37 +48,39 @@ header {
   text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
 }
 
+/* 📌 Confiance et services */
 .trust-item {
   display: flex;
   flex-direction: column;
   align-items: center;
   font-size: 14px;
-  color: #333;
+  color: white;
 }
 .trust-item i {
   margin-bottom: 5px;
 }
 .bg-light {
-  background-color: #75b8bf !important;
+  background-color: #1B263B!important;
 }
-/*  Style du titre des catégories */
+
+/* 📌 Titre des catégories */
 .category-title {
   font-size: 24px;
   font-weight: bold;
   margin-top: 20px;
 }
 
-/*  Conteneur des produits avec FLEXBOX */
+/* 📌 Conteneur des produits */
 .products-container {
-  display: flex; /* Alignement horizontal */
-  flex-wrap: wrap; /* Permet de revenir à la ligne si nécessaire */
-  gap: 20px; /* Espacement entre les produits */
-  justify-content: flex-start; /* Alignement à gauche */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: flex-start;
 }
 
-/*  Style des cartes produits (DESKTOP) */
+/* 📌 Cartes produits (DESKTOP) */
 .product-card {
-  width: calc(33.33% - 20px); /* 3 produits par ligne sur écran large */
+  width: calc(33.33% - 20px);
   background: #fff;
   border-radius: 10px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
@@ -84,62 +89,76 @@ header {
 }
 
 .product-card:hover {
-  transform: scale(1.05); /* Effet de zoom au survol */
+  transform: scale(1.05);
 }
 
-/*  Correction de la taille des images */
+/* 📌 Images des produits */
 .product-image {
   width: 100%;
-  height: 400px;
-  object-fit: cover; /* Recadre l'image sans la déformer */
+  height: 350px;
+  object-fit: cover;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
 }
 
-/* Style général du texte des cartes */
+/* 📌 Style général du texte des cartes */
 .card-body {
   padding: 15px;
   text-align: center;
 }
 
-/*  RESPONSIVE DESIGN */
+/* 📌 Responsive */
 
-/* 📱 Pour les écrans TABLETTES (768px - 1024px) */
+/* 📱 TABLETTES (768px - 1024px) */
 @media screen and (max-width: 1024px) {
   .product-card {
-      width: calc(50% - 20px); /* 2 produits par ligne */
+      width: calc(50% - 20px);
   }
 }
 
-/*  Pour les téléphones (≤ 768px) */
+/* 📱 MOBILES (≤ 768px) */
 @media screen and (max-width: 768px) {
   .product-card {
-      width: 100%; /* 1 produit par ligne */
+      width: 100%;
   }
 }
 
-
-/*  Style des images des carousels */
+/* 📌 Images des carousels */
 .carousel-image {
   width: 100%;
-  max-height:250px;
-  object-fit: cover;
+  max-height: 250px;
+  object-fit: contain;
   border-radius: 10px;
 }
 
-/*  Style des étoiles de notation */
+/* 📌 Images des carrousels "Storytelling" */
+.carousel-story-img {
+  max-width: 100%;
+  max-height: 250px;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+/* 📌 Centrer le texte sous les images */
+.carousel-item p {
+  font-size: 16px;
+  max-width: 80%;
+  margin: auto;
+}
+
+/* 📌 Étoiles notation */
 .stars {
   color: gold;
   font-size: 20px;
 }
 
-/*  Style des carousels */
+/* 📌 Style des carrousels */
 .carousel {
-  max-width: 600px; /* Taille max du carousel */
-  margin: auto; /* Centrer */
+  max-width: 700px;
+  margin: auto;
 }
 
-/*  Améliorer le style des boutons du carousel */
+/* 📌 Amélioration des boutons du carrousel */
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
   background-color: rgba(0, 0, 0, 0.5);
@@ -147,9 +166,22 @@ header {
   padding: 10px;
 }
 
-/*  Redimensionner les images du carousel */
-.carousel-item img {
-  width: 100%; /* L'image prend toute la largeur du carousel */
-
+/* 📌 Adaptation responsive */
+#avisCarousel, #storyCarousel {
+  max-width: 100%;
+  max-height: 100vh;
+  margin: auto;
 }
 
+.carousel-item img {
+  max-width: 100%;
+  max-height: 400px;
+  object-fit: contain;
+}
+
+/* 📌 Version Mobile : Réduction de la hauteur */
+@media screen and (max-width: 768px) {
+  .carousel-img, .carousel-story-img {
+      max-height: 200px;
+  }
+}
