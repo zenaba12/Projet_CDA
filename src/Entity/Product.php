@@ -31,6 +31,7 @@ class Product
     private ?string $image = null;
 
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'product', cascade: ['remove'], orphanRemoval: true)]
+    #[ORM\JoinColumn(nullable: true)]
     private Collection $comments;
     
     #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'products')]

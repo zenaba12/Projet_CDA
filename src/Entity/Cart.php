@@ -15,11 +15,11 @@ class Cart
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\OneToOne(inversedBy: 'cart', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'carts')]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')] // Suppression en cascade si User est supprimé
     private ?User $user = null;
 
-    #[ORM\OneToMany(targetEntity: CartItem::class, mappedBy: 'cart', cascade: ['remove'], orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: CartItem::class, mappedBy: 'cart', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $cartItems;
 
     public function __construct()
@@ -43,9 +43,6 @@ class Cart
         return $this;
     }
 
-    /**
-     * @return Collection<int, CartItem>
-     */
     public function getCartItems(): Collection
     {
         return $this->cartItems;
@@ -83,7 +80,9 @@ class Cart
     {
         $total = 0;
         foreach ($this->cartItems as $cartItem) {
-            $total += $cartItem->getProduct()->getPrix() * $cartItem->getQuantity();
+            if ($cartItem->getProduct()) { // Vérifie si le produit existe
+                $total += $cartItem->getProduct()->getPrix() * $cartItem->getQuantity();
+            }
         }
         return $total;
     }

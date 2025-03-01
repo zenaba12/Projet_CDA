@@ -24,7 +24,7 @@ class Comment
 
     // ✅ Relation avec User (auteur du commentaire)
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'comments')]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')] // ✅ Suppression automatique des commentaires si l'utilisateur est supprimé
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')] // ✅ Un commentaire peut être anonyme si l'utilisateur est supprimé
     private ?User $user = null;
 
     // ✅ Relation avec Product (produit commenté)
@@ -37,17 +37,52 @@ class Comment
         $this->dateTime = new \DateTime(); // ✅ Ajout automatique de la date du commentaire
     }
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getContenu(): ?string { return $this->contenu; }
-    public function setContenu(string $contenu): static { $this->contenu = $contenu; return $this; }
+    public function getContenu(): ?string
+    {
+        return $this->contenu;
+    }
 
-    public function getDateTime(): ?\DateTimeInterface { return $this->dateTime; }
-    public function setDateTime(\DateTimeInterface $dateTime): static { $this->dateTime = $dateTime; return $this; }
+    public function setContenu(string $contenu): static
+    {
+        $this->contenu = $contenu;
+        return $this;
+    }
 
-    public function getUser(): ?User { return $this->user; }
-    public function setUser(?User $user): static { $this->user = $user; return $this; }
+    public function getDateTime(): ?\DateTimeInterface
+    {
+        return $this->dateTime;
+    }
 
-    public function getProduct(): ?Product { return $this->product; }
-    public function setProduct(?Product $product): static { $this->product = $product; return $this; }
+    public function setDateTime(\DateTimeInterface $dateTime): static
+    {
+        $this->dateTime = $dateTime;
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+        return $this;
+    }
+
+    public function getProduct(): ?Product
+    {
+        return $this->product;
+    }
+
+    public function setProduct(?Product $product): static
+    {
+        $this->product = $product;
+        return $this;
+    }
 }

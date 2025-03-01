@@ -25,11 +25,8 @@ class UserType extends AbstractType
                 'label' => 'Prénom',
                 'required' => true
             ])
-            ->add('date_de_naissance', DateType::class, [
-                'widget' => 'single_text',
-                'label' => 'Date de naissance',
-                'required' => false,
-            ])
+            
+            
             ->add('roles', ChoiceType::class, [
                 'choices'  => [
                     'Utilisateur' => 'ROLE_USER',
