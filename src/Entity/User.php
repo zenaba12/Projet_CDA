@@ -9,6 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[UniqueEntity(fields: ['email'], message: 'Un compte existe déjà avec cet email.')]
@@ -32,7 +34,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le mot de passe est obligatoire.")]
+    #[Assert\Length(
+        min: 12,
+        minMessage: "Votre mot de passe doit contenir au moins 12 caractères."
+    )]
+    #[Assert\Regex(
+        pattern: "/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{12,}$/",
+        message: "Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial."
+    )]
+    #[Assert\NotCompromisedPassword(message: "Ce mot de passe a été compromis dans une fuite de données. Veuillez en choisir un autre.")]
     private ?string $password = null;
+
 
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'user', cascade: ['remove'], orphanRemoval: true)]
     private Collection $comments;

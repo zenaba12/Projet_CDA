@@ -37,7 +37,7 @@ header {
   background-color: #ffc107 !important;
 }
 
-/* 📌 Bannière Accueil */
+/*  Bannière Accueil */
 .banner {
   background-size: cover;
   background-position: center;
@@ -63,14 +63,21 @@ header {
   margin-bottom: 5px;
 }
 .bg-light {
-  background-color: #ffc107!important;
+  background-color:#6c757d!important;
 }
 
+@media (max-width: 576px) { /* Ajuste l'affichage pour les écrans <= 576px */
+  .container {
+      flex-wrap: nowrap !important; /* Empêche le passage à la ligne */
+      overflow-x: auto; /* Ajoute un défilement horizontal si nécessaire */
+      justify-content: space-between; /* Espace les éléments */
+  }
 /*  Titre des catégories */
 .category-title {
   font-size: 24px;
   font-weight: bold;
   margin-top: 20px;
+}
 }
 
 /*  Conteneur des produits */
@@ -188,3 +195,9 @@ header {
   }
 }
 
+/*  couleur des bouttons */
+.btn-boutton {
+  background-color: #6d93b4;
+  border-color: #7599b8;
+  color: white;
+}

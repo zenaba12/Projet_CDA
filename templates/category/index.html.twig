@@ -1,14 +1,12 @@
 {% extends 'admin_base.html.twig' %}
 
-{% block title %}Catégories de Produits{% endblock %}
+{% block title %}Gérer les Catégories{% endblock %}
 
 {% block body %}
 <div class="container mt-4">
-    <h1>Catégories de Produits</h1>
+    <h1>Gérer les Catégories</h1>
 
-    {% if is_granted('ROLE_ADMIN') %}
-        <a href="{{ path('category_new') }}" class="btn btn-success mb-3">➕ Ajouter une catégorie</a>
-    {% endif %}
+    <a href="{{ path('category_new') }}" class="btn btn-success mb-3">➕ Ajouter une catégorie</a>
 
     {% if categories is empty %}
         <p>Aucune catégorie disponible.</p>
@@ -19,16 +17,13 @@
                     <a href="{{ path('category_show', { id: category.id }) }}" class="text-decoration-none">
                         {{ category.nom }}
                     </a>
-
-                    {% if is_granted('ROLE_ADMIN') %}
-                        <div>
-                            <a href="{{ path('category_edit', { id: category.id }) }}" class="btn btn-warning btn-sm">✏ Modifier</a>
-                            <form action="{{ path('category_delete', { id: category.id }) }}" method="POST" class="d-inline">
-                               <button type="submit" class="btn btn-delete btn-sm">Supprimer</button>
-
-                            </form>
-                        </div>
-                    {% endif %}
+                    <div>
+                        <a href="{{ path('category_edit', { id: category.id }) }}" class="btn btn-warning btn-sm">✏ Modifier</a>
+                        <form action="{{ path('category_delete', { id: category.id }) }}" method="POST" class="d-inline">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ category.id) }}">
+                            <button type="submit" class="btn btn-delete btn-sm" onclick="return confirm('Confirmer la suppression ?')">❌ Supprimer</button>
+                        </form>
+                    </div>
                 </li>
             {% endfor %}
         </ul>

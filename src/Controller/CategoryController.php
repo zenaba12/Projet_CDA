@@ -18,14 +18,14 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class CategoryController extends AbstractController
 {
     #[Route('/', name: 'category_index', methods: ['GET'])]
-public function index(CategoryRepository $categoryRepository): Response
-{
-    $categories = $categoryRepository->findAll();
+    public function index(CategoryRepository $categoryRepository): Response
+    {
+        $categories = $categoryRepository->findAll();
 
-    return $this->render('category/catalogue.html.twig', [
-        'categories' => $categories,
-    ]);
-}
+        return $this->render('category/catalogue.html.twig', [
+            'categories' => $categories,
+        ]);
+    }
 
     //  Afficher le catalogue directement avec les produits par catégorie
     #[Route('/catalogue', name: 'catalogue', methods: ['GET'])]
@@ -61,15 +61,13 @@ public function index(CategoryRepository $categoryRepository): Response
             $em->persist($category);
             $em->flush();
             $this->addFlash('success', 'Catégorie ajoutée avec succès.');
-            return $this->redirectToRoute('catalogue');
+            return $this->redirectToRoute('category_index');
         }
 
-        return $this->render('category/form.html.twig', [
+        return $this->render('admin/category/form.html.twig', [
             'form' => $form->createView(),
         ]);
     }
-
-    
 
     // Modifier une catégorie (ADMIN uniquement)
     #[Route('/edit/{id}', name: 'category_edit', methods: ['GET', 'POST'])]
