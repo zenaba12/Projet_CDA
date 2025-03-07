@@ -3,10 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Category;
-use App\Entity\Product;
 use App\Form\CategoryType;
 use App\Repository\CategoryRepository;
-use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,39 +15,42 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/category')]
 class CategoryController extends AbstractController
 {
+    // Affichage du catalogue pour les visiteurs et clients
     #[Route('/', name: 'category_index', methods: ['GET'])]
     public function index(CategoryRepository $categoryRepository): Response
     {
-        $categories = $categoryRepository->findAll();
-
         return $this->render('category/catalogue.html.twig', [
-            'categories' => $categories,
+            'categories' => $categoryRepository->findAll(),
         ]);
     }
 
-    //  Afficher le catalogue directement avec les produits par catégorie
-    #[Route('/catalogue', name: 'catalogue', methods: ['GET'])]
-    public function catalogue(CategoryRepository $categoryRepository): Response
+    // Affichage des produits par catégorie
+    #[Route('/{id<\d+>}', name: 'category_show', methods: ['GET'])]
+    public function show(CategoryRepository $categoryRepository, int $id): Response
     {
-        $categories = $categoryRepository->findAll();
+        $category = $categoryRepository->find($id);
+        if (!$category) {
+            throw $this->createNotFoundException("⚠️ Cette catégorie n'existe pas !");
+        }
 
-        return $this->render('category/catalogue.html.twig', [
-            'categories' => $categories,
-        ]);
-    }
-
-    //  Afficher les produits d'une seule catégorie
-    #[Route('/{id}', name: 'category_show', methods: ['GET'])]
-    public function show(Category $category): Response
-    {
         return $this->render('category/show.html.twig', [
             'category' => $category,
             'products' => $category->getProducts(),
         ]);
     }
 
-    //  Ajouter une catégorie (ADMIN uniquement)
-    #[Route('/new', name: 'category_new', methods: ['GET', 'POST'])]
+    // Affichage de l'interface admin pour gérer les catégories
+    #[Route('/admin', name: 'admin_category_index', methods: ['GET'])]
+    #[IsGranted('ROLE_ADMIN')]
+    public function adminIndex(CategoryRepository $categoryRepository): Response
+    {
+        return $this->render('category/index.html.twig', [
+            'categories' => $categoryRepository->findAll(),
+        ]);
+    }
+
+    // Ajouter une catégorie (ADMIN uniquement)
+    #[Route('/admin/new', name: 'category_new', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_ADMIN')]
     public function new(Request $request, EntityManagerInterface $em): Response
     {
@@ -61,26 +62,31 @@ class CategoryController extends AbstractController
             $em->persist($category);
             $em->flush();
             $this->addFlash('success', 'Catégorie ajoutée avec succès.');
-            return $this->redirectToRoute('category_index');
+            return $this->redirectToRoute('admin_category_index');
         }
 
-        return $this->render('admin/category/form.html.twig', [
+        return $this->render('category/form.html.twig', [
             'form' => $form->createView(),
         ]);
     }
 
     // Modifier une catégorie (ADMIN uniquement)
-    #[Route('/edit/{id}', name: 'category_edit', methods: ['GET', 'POST'])]
+    #[Route('/admin/edit/{id}', name: 'category_edit', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function edit(Request $request, Category $category, EntityManagerInterface $em): Response
+    public function edit(Request $request, CategoryRepository $categoryRepository, int $id, EntityManagerInterface $em): Response
     {
+        $category = $categoryRepository->find($id);
+        if (!$category) {
+            throw $this->createNotFoundException("⚠️ Catégorie introuvable !");
+        }
+
         $form = $this->createForm(CategoryType::class, $category);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em->flush();
             $this->addFlash('success', 'Catégorie mise à jour avec succès.');
-            return $this->redirectToRoute('catalogue');
+            return $this->redirectToRoute('admin_category_index');
         }
 
         return $this->render('category/form.html.twig', [
@@ -89,16 +95,21 @@ class CategoryController extends AbstractController
     }
 
     // Supprimer une catégorie (ADMIN uniquement)
-    #[Route('/delete/{id}', name: 'category_delete', methods: ['POST'])]
+    #[Route('/admin/delete/{id}', name: 'category_delete', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function delete(Category $category, EntityManagerInterface $em, Request $request): Response
+    public function delete(Request $request, CategoryRepository $categoryRepository, int $id, EntityManagerInterface $em): Response
     {
+        $category = $categoryRepository->find($id);
+        if (!$category) {
+            throw $this->createNotFoundException("⚠️ Catégorie introuvable !");
+        }
+
         if ($this->isCsrfTokenValid('delete' . $category->getId(), $request->request->get('_token'))) {
             $em->remove($category);
             $em->flush();
             $this->addFlash('success', 'Catégorie supprimée avec succès.');
         }
 
-        return $this->redirectToRoute('catalogue');
+        return $this->redirectToRoute('admin_category_index');
     }
 }

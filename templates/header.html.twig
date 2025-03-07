@@ -19,7 +19,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav">
             <li class="nav-item"><a class="nav-link" href="{{ path('app_home') }}"> Accueil</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ path('catalogue') }}"> Catalogue</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ path('category_index') }}"> Catalogue</a></li>
             <li class="nav-item"><a class="nav-link" href="{{ path('faq') }}">  FAQ </a></li>
            <li class="nav-item"><a class="nav-link" href="{{ path('contact') }}"> Contact</a></li>
            <li class="nav-item"><a class="nav-link" href="{{ path('about') }}"> À propos</a></li>
@@ -27,9 +27,15 @@
               <li class="nav-item"><a class="nav-link" href="{{ path('app_login') }}"> Connexion</a></li>
               <li class="nav-item"><a class="nav-link" href="{{ path('app_register') }}"> S'inscrire</a></li>
             {% else %}
+
+ {% if is_granted('ROLE_ADMIN') %}
+    <li class="nav-item">
+      <a class="nav-link text-warning fw-bold" href="{{ path('admin_dashboard') }}">⚙️ Admin</a>
+    </li>
+  {% endif %}
               <li class="nav-item">
                 <form action="{{ path('app_logout') }}" method="POST" class="d-inline">
-                  <button type="submit" class="btn btn-link nav-link text-danger">Déconnexion</button>
+                  <button type="submit" class="btn btn-link nav-link text-warning">Déconnexion</button>
                 </form>
               </li>
             {% endif %}

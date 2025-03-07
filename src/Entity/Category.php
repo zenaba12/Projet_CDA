@@ -15,7 +15,7 @@ class Category
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255, nullable: false)] // ✅ Nom obligatoire
+    #[ORM\Column(length: 255, nullable: false)]
     private ?string $nom = null;
 
     /**
@@ -29,10 +29,20 @@ class Category
         $this->products = new ArrayCollection();
     }
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getNom(): ?string { return $this->nom; }
-    public function setNom(string $nom): static { $this->nom = $nom; return $this; }
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+    public function setNom(string $nom): static
+    {
+        $this->nom = $nom;
+        return $this;
+    }
 
     /**
      * @return Collection<int, Product>
