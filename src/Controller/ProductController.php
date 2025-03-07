@@ -16,6 +16,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Entity\Cart;
 use App\Entity\CartItem;
 use Symfony\Bundle\SecurityBundle\Security;
+use App\Repository\ProductRepository;
 
 
 
@@ -27,16 +28,38 @@ class ProductController extends AbstractController
     public function index(EntityManagerInterface $em): Response
     {
         // Vérifie si l'utilisateur est administrateur
-    if (!$this->isGranted('ROLE_ADMIN')) {
-        // Ajoute un message flash
-        $this->addFlash('error', 'Cet espace est réservé aux administrateurs.');
+        if (!$this->isGranted('ROLE_ADMIN')) {
+            // Ajoute un message flash
+            $this->addFlash('error', 'Cet espace est réservé aux administrateurs.');
 
-        // Redirige vers la page d'accueil au lieu de 403
-        return $this->redirectToRoute('app_home');
-    }
+            // Redirige vers la page d'accueil 
+            return $this->redirectToRoute('app_home');
+        }
         $products = $em->getRepository(Product::class)->findAll();
         return $this->render('product/index.html.twig', ['products' => $products]);
     }
+
+    #[Route('/product/{id}', name: 'product_show', methods: ['GET'])]
+    public function show(ProductRepository $productRepository, int $id): Response
+    {
+        $product = $productRepository->find($id);
+
+        if (!$product) {
+            throw $this->createNotFoundException("⚠️ Produit introuvable !");
+        }
+
+        // Vérifier quel produit est affiché et rediriger vers la bonne page Twig
+        if ($product->getNom() === 'Huile de Batana') {
+            return $this->render('product/batana.html.twig', ['product' => $product]);
+        } elseif ($product->getNom() === 'Huile de Moringa') {
+            return $this->render('product/moringa.html.twig', ['product' => $product]);
+        } elseif ($product->getNom() === 'Huile de Chebé') {
+            return $this->render('product/chebe.html.twig', ['product' => $product]);
+        }
+        //Si le produit n'est pas Batana, Moringa ou Chébé, rediriger vers une page d'erreur ou une page générique
+        throw $this->createNotFoundException("⚠️ Page introuvable pour ce produit.");
+    }
+
 
     //  Ajouter un produit
     #[Route('/new', name: 'product_new', methods: ['GET', 'POST'])]
@@ -80,7 +103,7 @@ class ProductController extends AbstractController
     //  Modifier un produit
     #[Route('/edit/{id}', name: 'product_edit', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_ADMIN')]
-        public function edit(int $id, Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
+    public function edit(int $id, Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
     {
         $product = $em->getRepository(Product::class)->find($id);
         if (!$product) {
@@ -142,24 +165,24 @@ class ProductController extends AbstractController
     {
         $user = $security->getUser();
         if (!$user) return $this->redirectToRoute('app_login');
-   
+
         $product = $em->getRepository(Product::class)->find($id);
         if (!$product) {
             throw $this->createNotFoundException("Produit non trouvé.");
         }
-   
+
         // Vérifier si l'utilisateur a déjà un panier
         $cart = $em->getRepository(Cart::class)->findOneBy(['user' => $user]);
-   
+
         if (!$cart) {
             $cart = new Cart();
             $cart->setUser($user);
             $em->persist($cart);
         }
-   
+
         // Vérifier si le produit est déjà dans le panier
         $cartItem = $em->getRepository(CartItem::class)->findOneBy(['cart' => $cart, 'product' => $product]);
-   
+
         if ($cartItem) {
             $cartItem->setQuantity($cartItem->getQuantity() + 1);
         } else {
@@ -169,22 +192,10 @@ class ProductController extends AbstractController
             $cartItem->setQuantity(1);
             $em->persist($cartItem);
         }
-   
+
         $em->flush();
-   
+
         $this->addFlash('success', 'Produit ajouté au panier.');
         return $this->redirectToRoute('cart_show');
     }
-
-    #[Route('/product/{id}', name: 'product_show')]
-public function show(Product $product): Response
-{
-    return $this->render('product/show.html.twig', [
-        'product' => $product,
-    ]);
 }
-
-   
-}
-
-
