@@ -2,39 +2,57 @@
 
 namespace App\Entity;
 
-use App\Repository\CommentRepository;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Delete;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\User;
-use App\Entity\Product;
+use App\Repository\CommentRepository;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
+#[ApiResource(
+    normalizationContext: ['groups' => ['comment:read']],
+    denormalizationContext: ['groups' => ['comment:write']],
+    security: "is_granted('ROLE_USER')", // Seuls les utilisateurs connectés peuvent voir/ajouter
+    operations: [
+        new GetCollection(),
+        new Post(security: "is_granted('ROLE_USER')"), // Seuls les utilisateurs connectés peuvent ajouter un commentaire
+        new Get(),
+        new Delete(security: "is_granted('ROLE_ADMIN') or object.getUser() == user"), // Seul l’admin ou l'auteur du commentaire peut supprimer
+    ]
+)]
 class Comment
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['comment:read', 'product:read', 'user:read'])]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::TEXT)] // ✅ Texte long pour le contenu
+    #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['comment:read', 'comment:write', 'product:read', 'user:read'])]
     private ?string $contenu = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)] // ✅ Date et heure du commentaire
-    private ?\DateTimeInterface $dateTime = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(['comment:read'])]
+    private ?\DateTimeInterface $createdAt = null;
 
-    // ✅ Relation avec User (auteur du commentaire)
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'comments')]
-    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')] // ✅ Un commentaire peut être anonyme si l'utilisateur est supprimé
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    #[Groups(['comment:read', 'comment:write'])]
     private ?User $user = null;
 
-    // ✅ Relation avec Product (produit commenté)
     #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'comments')]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')] // ✅ Suppression automatique des commentaires si le produit est supprimé
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Groups(['comment:read', 'comment:write'])]
     private ?Product $product = null;
 
     public function __construct()
     {
-        $this->dateTime = new \DateTime(); // ✅ Ajout automatique de la date du commentaire
+        $this->createdAt = new \DateTime();
     }
 
     public function getId(): ?int
@@ -46,21 +64,19 @@ class Comment
     {
         return $this->contenu;
     }
-
     public function setContenu(string $contenu): static
     {
         $this->contenu = $contenu;
         return $this;
     }
 
-    public function getDateTime(): ?\DateTimeInterface
+    public function getCreatedAt(): ?\DateTimeInterface
     {
-        return $this->dateTime;
+        return $this->createdAt;
     }
-
-    public function setDateTime(\DateTimeInterface $dateTime): static
+    public function setCreatedAt(\DateTimeInterface $createdAt): static
     {
-        $this->dateTime = $dateTime;
+        $this->createdAt = $createdAt;
         return $this;
     }
 
@@ -68,7 +84,6 @@ class Comment
     {
         return $this->user;
     }
-
     public function setUser(?User $user): static
     {
         $this->user = $user;
@@ -79,7 +94,6 @@ class Comment
     {
         return $this->product;
     }
-
     public function setProduct(?Product $product): static
     {
         $this->product = $product;

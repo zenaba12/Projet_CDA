@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -10,50 +10,54 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
-
+use Symfony\Component\Serializer\Annotation\Groups;
+use App\Repository\UserRepository;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ApiResource(
+    normalizationContext: ['groups' => ['user:read']],
+    denormalizationContext: ['groups' => ['user:write']]
+)]
 #[UniqueEntity(fields: ['email'], message: 'Un compte existe déjà avec cet email.')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['user:read', 'comment:read', 'order:read', 'cart:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
+    #[Groups(['user:read', 'user:write', 'comment:read'])]
     private ?string $nom = null;
 
     #[ORM\Column(length: 100)]
+    #[Groups(['user:read', 'user:write', 'comment:read'])]
     private ?string $prenom = null;
 
     #[ORM\Column(type: 'json')]
+    #[Groups(['user:read', 'user:write'])]
     private array $roles = [];
 
     #[ORM\Column(length: 100, unique: true)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: "Le mot de passe est obligatoire.")]
-    #[Assert\Length(
-        min: 12,
-        minMessage: "Votre mot de passe doit contenir au moins 12 caractères."
-    )]
-    #[Assert\Regex(
-        pattern: "/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{12,}$/",
-        message: "Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial."
-    )]
-    #[Assert\NotCompromisedPassword(message: "Ce mot de passe a été compromis dans une fuite de données. Veuillez en choisir un autre.")]
+    #[Groups(['user:write'])]
     private ?string $password = null;
 
-
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'user', cascade: ['remove'], orphanRemoval: true)]
+    #[Groups(['user:read'])]
     private Collection $comments;
 
     #[ORM\OneToMany(targetEntity: Cart::class, mappedBy: 'user', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[Groups(['user:read'])]
     private Collection $carts;
 
     #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'user', cascade: ['remove'], orphanRemoval: true)]
+    #[Groups(['user:read'])]
     private Collection $orders;
 
     public function __construct()
@@ -72,7 +76,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->nom;
     }
-
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
@@ -83,19 +86,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->prenom;
     }
-
     public function setPrenom(string $prenom): static
     {
         $this->prenom = $prenom;
         return $this;
     }
 
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+    public function setEmail(string $email): static
+    {
+        $this->email = $email;
+        return $this;
+    }
+
     public function getRoles(): array
     {
-        // Toujours inclure ROLE_USER par défaut
-        $roles = $this->roles;
-        $roles[] = 'ROLE_USER';
-        return array_unique($roles);
+        return array_unique($this->roles);
     }
 
     public function setRoles(array $roles): static
@@ -104,32 +113,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(string $email): static
-    {
-        $this->email = $email;
-        return $this;
-    }
-
     public function getPassword(): ?string
     {
         return $this->password;
     }
-
     public function setPassword(string $password): static
     {
         $this->password = $password;
         return $this;
     }
 
-    public function eraseCredentials(): void
-    {
-        // Méthode requise par UserInterface pour effacer les informations sensibles
-    }
+    public function eraseCredentials(): void {}
 
     public function getUserIdentifier(): string
     {
@@ -140,7 +134,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->carts;
     }
-
     public function addCart(Cart $cart): static
     {
         if (!$this->carts->contains($cart)) {
@@ -150,21 +143,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function removeCart(Cart $cart): static
-    {
-        if ($this->carts->removeElement($cart)) {
-            if ($cart->getUser() === $this) {
-                $cart->setUser(null);
-            }
-        }
-        return $this;
-    }
-
     public function getComments(): Collection
     {
         return $this->comments;
     }
-
     public function addComment(Comment $comment): static
     {
         if (!$this->comments->contains($comment)) {
@@ -174,36 +156,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function removeComment(Comment $comment): static
-    {
-        if ($this->comments->removeElement($comment)) {
-            if ($comment->getUser() === $this) {
-                $comment->setUser(null);
-            }
-        }
-        return $this;
-    }
-
     public function getOrders(): Collection
     {
         return $this->orders;
     }
-
     public function addOrder(Order $order): static
     {
         if (!$this->orders->contains($order)) {
             $this->orders->add($order);
             $order->setUser($this);
-        }
-        return $this;
-    }
-
-    public function removeOrder(Order $order): static
-    {
-        if ($this->orders->removeElement($order)) {
-            if ($order->getUser() === $this) {
-                $order->setUser(null);
-            }
         }
         return $this;
     }
