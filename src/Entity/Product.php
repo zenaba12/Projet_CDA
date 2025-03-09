@@ -11,10 +11,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use App\Repository\ProductRepository;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
-#[ApiResource(
-    normalizationContext: ['groups' => ['product:read']],
-    denormalizationContext: ['groups' => ['product:write']]
-)]
 class Product
 {
     #[ORM\Id]

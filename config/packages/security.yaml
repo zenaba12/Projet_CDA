@@ -34,4 +34,5 @@ security:
     - { path: ^/login, roles: PUBLIC_ACCESS } # 🔹 Accessible à tout le monde
     - { path: ^/logout, roles: PUBLIC_ACCESS } # 🔹 Accessible à tout le monde
     - { path: ^/admin, roles: ROLE_ADMIN } # 🔒 Seulement les admins
-    - { path: ^/, roles: PUBLIC_ACCESS } # ✅ Permet aux visiteurs d’accéder aux pages publiques
+    - { path: ^/, roles: PUBLIC_ACCESS } #  Permet aux visiteurs d’accéder aux pages publiques
+    - { path: ^/api/comments, roles: PUBLIC_ACCESS } #  Autorise les visiteurs à voir les commentaires

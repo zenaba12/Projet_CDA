@@ -18,29 +18,29 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 class UserController extends AbstractController
 {
     #[Route('/', name: 'users_list', methods: ['GET'])]
-public function index(EntityManagerInterface $em): Response
-{ 
-    // Vérifie si l'utilisateur est bien authentifié
-    if (!$this->getUser()) {
-        return $this->redirectToRoute('app_login');
+    public function index(EntityManagerInterface $em): Response
+    {
+        // Vérifie si l'utilisateur est bien authentifié
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        // Vérifie si l'utilisateur est administrateur
+        if (!$this->isGranted('ROLE_ADMIN')) {
+            // Ajoute un message flash
+            $this->addFlash('error', 'Cet espace est réservé aux administrateurs.');
+
+            // Redirige vers la page d'accueil au lieu de 403
+            return $this->redirectToRoute('app_home');
+        }
+
+        // Récupère la liste des utilisateurs si l'utilisateur est admin
+        $users = $em->getRepository(className: User::class)->findAll();
+
+        return $this->render('user/index.html.twig', [
+            'users' => $users,
+        ]);
     }
-
-    // Vérifie si l'utilisateur est administrateur
-    if (!$this->isGranted('ROLE_ADMIN')) {
-        // Ajoute un message flash
-        $this->addFlash('error', 'Cet espace est réservé aux administrateurs.');
-
-        // Redirige vers la page d'accueil au lieu de 403
-        return $this->redirectToRoute('app_home');
-    }
-
-    // Récupère la liste des utilisateurs si l'utilisateur est admin
-    $users = $em->getRepository(className: User::class)->findAll();
-
-    return $this->render('user/index.html.twig', [
-        'users' => $users,
-    ]);
-}
     #[Route('/create', name: 'user_create', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_ADMIN')]
     public function create(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $hasher): Response

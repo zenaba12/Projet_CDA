@@ -22,11 +22,7 @@ class RegistrationFormType extends AbstractType
                 'attr' => ['class' => 'form-control'],
                 'constraints' => [
                     new Assert\NotBlank(['message' => 'Le nom est obligatoire.']),
-                    new Assert\Length([
-                        'min' => 2,
-                        'minMessage' => 'Le nom doit contenir au moins 2 caractères.',
-                        'max' => 100
-                    ])
+                    new Assert\Length(['min' => 2, 'max' => 100])
                 ]
             ])
             ->add('prenom', TextType::class, [
@@ -34,11 +30,7 @@ class RegistrationFormType extends AbstractType
                 'attr' => ['class' => 'form-control'],
                 'constraints' => [
                     new Assert\NotBlank(['message' => 'Le prénom est obligatoire.']),
-                    new Assert\Length([
-                        'min' => 2,
-                        'minMessage' => 'Le prénom doit contenir au moins 2 caractères.',
-                        'max' => 100
-                    ])
+                    new Assert\Length(['min' => 2, 'max' => 100])
                 ]
             ])
             ->add('email', EmailType::class, [
@@ -51,7 +43,7 @@ class RegistrationFormType extends AbstractType
             ])
             ->add('password', PasswordType::class, [
                 'label' => 'Mot de passe',
-                'mapped' => false,
+                'mapped' => true, // Correction: maintenant le mot de passe est bien mappé à User
                 'attr' => ['class' => 'form-control'],
                 'constraints' => [
                     new Assert\NotBlank(['message' => 'Le mot de passe est obligatoire.']),
@@ -63,9 +55,7 @@ class RegistrationFormType extends AbstractType
                         'pattern' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{12,}$/',
                         'message' => 'Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.'
                     ]),
-                    new Assert\NotCompromisedPassword([
-                        'message' => 'Ce mot de passe a été compromis dans une fuite de données. Veuillez en choisir un autre.'
-                    ])
+                    new Assert\NotCompromisedPassword()
                 ]
             ])
             ->add('agreeTerms', CheckboxType::class, [

@@ -16,14 +16,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiResource(
     normalizationContext: ['groups' => ['comment:read']],
     denormalizationContext: ['groups' => ['comment:write']],
-    security: "is_granted('ROLE_USER')", // Seuls les utilisateurs connectés peuvent voir/ajouter
+    security: "is_granted('PUBLIC_ACCESS') or is_granted('ROLE_USER')", // Autorise tout le monde à voir les commentaires
     operations: [
-        new GetCollection(),
-        new Post(security: "is_granted('ROLE_USER')"), // Seuls les utilisateurs connectés peuvent ajouter un commentaire
-        new Get(),
-        new Delete(security: "is_granted('ROLE_ADMIN') or object.getUser() == user"), // Seul l’admin ou l'auteur du commentaire peut supprimer
+        new GetCollection(security: "is_granted('PUBLIC_ACCESS') or is_granted('ROLE_USER')"), // Tout le monde peut voir
+        new Post(security: "is_granted('ROLE_USER')"), //  Seuls les utilisateurs peuvent ajouter
+        new Get(security: "is_granted('PUBLIC_ACCESS') or is_granted('ROLE_USER')"), //  Tout le monde peut voir un commentaire
+        new Delete(security: "is_granted('ROLE_ADMIN') or object.getUser() == user"), //  Seuls l’admin ou l’auteur peuvent supprimer
     ]
 )]
+
 class Comment
 {
     #[ORM\Id]

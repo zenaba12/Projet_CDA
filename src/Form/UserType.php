@@ -8,9 +8,9 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class UserType extends AbstractType
 {
@@ -25,10 +25,8 @@ class UserType extends AbstractType
                 'label' => 'Prénom',
                 'required' => true
             ])
-            
-            
             ->add('roles', ChoiceType::class, [
-                'choices'  => [
+                'choices' => [
                     'Utilisateur' => 'ROLE_USER',
                     'Administrateur' => 'ROLE_ADMIN',
                 ],
@@ -41,9 +39,20 @@ class UserType extends AbstractType
                 'required' => true
             ])
             ->add('password', PasswordType::class, [
-                'label' => 'password',
-                'mapped' => false, // Important pour ne pas modifier le mot de passe existant par défaut
+                'label' => 'Mot de passe',
+                'mapped' => false,
                 'required' => false,
+                'attr' => ['autocomplete' => 'new-password'],
+                'constraints' => [
+                    new Assert\Length([
+                        'min' => 12,
+                        'minMessage' => 'Votre mot de passe doit contenir au moins 12 caractères.'
+                    ]),
+                    new Assert\Regex([
+                        'pattern' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{12,}$/',
+                        'message' => 'Le mot de passe doit contenir au moins une majuscule, une minuscule, un chiffre et un caractère spécial.'
+                    ])
+                ]
             ]);
     }
 

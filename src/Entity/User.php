@@ -14,39 +14,38 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use App\Repository\UserRepository;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ApiResource(
-    normalizationContext: ['groups' => ['user:read']],
-    denormalizationContext: ['groups' => ['user:write']]
-)]
+
 #[UniqueEntity(fields: ['email'], message: 'Un compte existe déjà avec cet email.')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['user:read', 'comment:read', 'order:read', 'cart:read'])]
+    #[Groups(['comment:read'])] // Exposé uniquement si nécessaire dans Comment
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups(['user:read', 'user:write', 'comment:read'])]
+    #[Groups(['comment:read'])] // Nom affiché uniquement dans les commentaires
     private ?string $nom = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups(['user:read', 'user:write', 'comment:read'])]
+    #[Groups(['comment:read'])] // Prénom affiché uniquement dans les commentaires
     private ?string $prenom = null;
 
     #[ORM\Column(type: 'json')]
-    #[Groups(['user:read', 'user:write'])]
     private array $roles = [];
 
     #[ORM\Column(length: 100, unique: true)]
-    #[Groups(['user:read', 'user:write'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: "Le mot de passe est obligatoire.")]
-    #[Groups(['user:write'])]
+    #[Assert\Length(
+        min: 12,
+        minMessage: "Votre mot de passe doit contenir au moins 12 caractères."
+    )]
     private ?string $password = null;
+
 
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'user', cascade: ['remove'], orphanRemoval: true)]
     #[Groups(['user:read'])]

@@ -18,8 +18,6 @@ use App\Entity\CartItem;
 use Symfony\Bundle\SecurityBundle\Security;
 use App\Repository\ProductRepository;
 
-
-
 #[Route('/product')]
 class ProductController extends AbstractController
 {
