@@ -46,16 +46,15 @@ class ProductController extends AbstractController
             throw $this->createNotFoundException("⚠️ Produit introuvable !");
         }
 
-        // Vérifier quel produit est affiché et rediriger vers la bonne page Twig
-        if ($product->getNom() === 'Huile de Batana') {
-            return $this->render('product/batana.html.twig', ['product' => $product]);
-        } elseif ($product->getNom() === 'Huile de Moringa') {
-            return $this->render('product/moringa.html.twig', ['product' => $product]);
-        } elseif ($product->getNom() === 'Huile de Chebé') {
-            return $this->render('product/chebe.html.twig', ['product' => $product]);
-        }
-        //Si le produit n'est pas Batana, Moringa ou Chébé, rediriger vers une page d'erreur ou une page générique
-        throw $this->createNotFoundException("⚠️ Page introuvable pour ce produit.");
+        // Vérifier si le produit a une vue spécifique
+        $template = match ($product->getNom()) {
+            'Huile de Batana' => 'product/batana.html.twig',
+            'Huile de Moringa' => 'product/moringa.html.twig',
+            'Huile de Chebé' => 'product/chebe.html.twig',
+            default => 'product/show.html.twig', // Vue par défaut pour les autres produits
+        };
+
+        return $this->render($template, ['product' => $product]);
     }
 
 

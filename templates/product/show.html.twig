@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ product.nom }}{% endblock %}
+
+{% block body %}
+<h1>{{ product.nom }}</h1>
+<p>{{ product.description }}</p>
+<p>Prix : {{ product.prix }} €</p>
+
+<!-- Section des Commentaires -->
+<h2>Commentaires</h2>
+{% if product.comments|length > 0 %}
+    {% for comment in product.comments %}
+        <div class="comment">
+            <p><strong>{{ comment.user.nom ?? 'Utilisateur supprimé' }}</strong> :</p>
+            <p>{{ comment.contenu }}</p>
+            <p class="date">Posté le {{ comment.createdAt|date('d/m/Y H:i') }}</p>
+
+            {% if app.user and (app.user == comment.user or is_granted('ROLE_ADMIN')) %}
+                <form action="{{ path('comment_delete', {'id': comment.id}) }}" method="POST" onsubmit="return confirm('Voulez-vous vraiment supprimer ce commentaire ?');">
+                    <button type="submit" class="btn-delete">Supprimer</button>
+                </form>
+            {% endif %}
+        </div>
+    {% endfor %}
+{% else %}
+    <p>Aucun commentaire pour ce produit.</p>
+{% endif %}
+
+<!-- Formulaire d'ajout de commentaire -->
+{% if app.user %}
+    <h2>Ajouter un commentaire</h2>
+    <form action="{{ path('comment_add', {'productId': product.id}) }}" method="POST">
+        <textarea name="contenu" required placeholder="Votre commentaire..." rows="4"></textarea>
+        <button type="submit" class="btn-add">Envoyer</button>
+    </form>
+{% else %}
+    <p><a href="{{ path('app_login') }}">Connectez-vous</a> pour ajouter un commentaire.</p>
+{% endif %}
+
+{% endblock %}

@@ -2,12 +2,9 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\ApiProperty;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
 use App\Repository\ProductRepository;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
@@ -16,36 +13,28 @@ class Product
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['product:read', 'comment:read', 'category:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups(['product:read', 'product:write', 'comment:read'])]
     private ?string $nom = null;
 
     #[ORM\Column(type: 'text')]
-    #[Groups(['product:read', 'product:write'])]
     private ?string $description = null;
 
     #[ORM\Column]
-    #[Groups(['product:read', 'product:write'])]
     private ?float $prix = null;
 
     #[ORM\Column]
-    #[Groups(['product:read', 'product:write'])]
     private ?int $stock = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(['product:read', 'product:write'])]
     private ?string $image = null;
 
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'product', cascade: ['remove'], orphanRemoval: true)]
-    #[Groups(['product:read'])]
     private Collection $comments;
 
     #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['product:read', 'product:write'])]
     private ?Category $category = null;
 
     #[ORM\OneToMany(targetEntity: CartItem::class, mappedBy: 'product', cascade: ['remove'], orphanRemoval: true)]

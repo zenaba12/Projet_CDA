@@ -2,53 +2,30 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Delete;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\CommentRepository;
-use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
-#[ApiResource(
-    normalizationContext: ['groups' => ['comment:read']],
-    denormalizationContext: ['groups' => ['comment:write']],
-    security: "is_granted('PUBLIC_ACCESS') or is_granted('ROLE_USER')", // Autorise tout le monde à voir les commentaires
-    operations: [
-        new GetCollection(security: "is_granted('PUBLIC_ACCESS') or is_granted('ROLE_USER')"), // Tout le monde peut voir
-        new Post(security: "is_granted('ROLE_USER')"), //  Seuls les utilisateurs peuvent ajouter
-        new Get(security: "is_granted('PUBLIC_ACCESS') or is_granted('ROLE_USER')"), //  Tout le monde peut voir un commentaire
-        new Delete(security: "is_granted('ROLE_ADMIN') or object.getUser() == user"), //  Seuls l’admin ou l’auteur peuvent supprimer
-    ]
-)]
-
 class Comment
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['comment:read', 'product:read', 'user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['comment:read', 'comment:write', 'product:read', 'user:read'])]
     private ?string $contenu = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(['comment:read'])]
     private ?\DateTimeInterface $createdAt = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
-    #[Groups(['comment:read', 'comment:write'])]
     private ?User $user = null;
 
     #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    #[Groups(['comment:read', 'comment:write'])]
     private ?Product $product = null;
 
     public function __construct()

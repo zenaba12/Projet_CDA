@@ -2,68 +2,66 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Serializer\Annotation\Groups;
 use App\Repository\UserRepository;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-
-#[UniqueEntity(fields: ['email'], message: 'Un compte existe déjà avec cet email.')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['comment:read'])] // Exposé uniquement si nécessaire dans Comment
     private ?int $id = null;
 
-    #[ORM\Column(length: 100)]
-    #[Groups(['comment:read'])] // Nom affiché uniquement dans les commentaires
-    private ?string $nom = null;
-
-    #[ORM\Column(length: 100)]
-    #[Groups(['comment:read'])] // Prénom affiché uniquement dans les commentaires
-    private ?string $prenom = null;
-
-    #[ORM\Column(type: 'json')]
-    private array $roles = [];
-
-    #[ORM\Column(length: 100, unique: true)]
+    #[ORM\Column(length: 180, unique: true)]
+    #[Assert\NotBlank(message: 'L\'email est obligatoire.')]
+    #[Assert\Email(message: 'Veuillez entrer un email valide.')]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: "Le mot de passe est obligatoire.")]
+    #[Assert\NotBlank(message: 'Le nom est obligatoire.')]
+    #[Assert\Length(min: 2, max: 100)]
+    private ?string $nom = null;
+
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le prénom est obligatoire.')]
+    #[Assert\Length(min: 2, max: 100)]
+    private ?string $prenom = null;
+
+    #[ORM\Column]
+    private array $roles = [];
+
+    #[ORM\Column]
+    #[Assert\NotBlank(message: 'Le mot de passe est obligatoire.')]
     #[Assert\Length(
         min: 12,
-        minMessage: "Votre mot de passe doit contenir au moins 12 caractères."
+        minMessage: 'Votre mot de passe doit contenir au moins 12 caractères.'
+    )]
+    #[Assert\Regex(
+        pattern: '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{12,}$/',
+        message: 'Le mot de passe doit contenir au moins une majuscule, une minuscule, un chiffre et un caractère spécial.'
     )]
     private ?string $password = null;
 
-
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'user', cascade: ['remove'], orphanRemoval: true)]
-    #[Groups(['user:read'])]
     private Collection $comments;
 
-    #[ORM\OneToMany(targetEntity: Cart::class, mappedBy: 'user', cascade: ['persist', 'remove'], orphanRemoval: true)]
-    #[Groups(['user:read'])]
+    #[ORM\OneToMany(targetEntity: Cart::class, mappedBy: 'user', cascade: ['remove'], orphanRemoval: true)]
     private Collection $carts;
 
     #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'user', cascade: ['remove'], orphanRemoval: true)]
-    #[Groups(['user:read'])]
     private Collection $orders;
 
     public function __construct()
     {
         $this->comments = new ArrayCollection();
-        $this->orders = new ArrayCollection();
         $this->carts = new ArrayCollection();
+        $this->orders = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -75,6 +73,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->nom;
     }
+
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
@@ -85,6 +84,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->prenom;
     }
+
     public function setPrenom(string $prenom): static
     {
         $this->prenom = $prenom;
@@ -95,6 +95,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->email;
     }
+
     public function setEmail(string $email): static
     {
         $this->email = $email;
@@ -103,12 +104,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getRoles(): array
     {
-        return array_unique($this->roles);
+        $roles = $this->roles;
+        $roles[] = 'ROLE_USER'; // Garantit que chaque utilisateur a au moins ce rôle
+        return array_unique($roles);
     }
 
     public function setRoles(array $roles): static
     {
-        $this->roles = $roles;
+        // Garantit que ROLE_USER est toujours attribué
+        $roles[] = 'ROLE_USER';
+        $this->roles = array_unique($roles);
+        return $this;
+    }
+
+    public function addRole(string $role): static
+    {
+        // Ajoute un rôle uniquement s'il n'existe pas déjà
+        if (!in_array($role, $this->roles, true)) {
+            $this->roles[] = $role;
+        }
         return $this;
     }
 
@@ -116,36 +130,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->password;
     }
+
     public function setPassword(string $password): static
     {
         $this->password = $password;
         return $this;
     }
 
-    public function eraseCredentials(): void {}
+    public function eraseCredentials(): void
+    {
+        // Ne pas effacer `password` avant la sauvegarde en base
+    }
 
     public function getUserIdentifier(): string
     {
         return $this->email;
     }
 
-    public function getCarts(): Collection
-    {
-        return $this->carts;
-    }
-    public function addCart(Cart $cart): static
-    {
-        if (!$this->carts->contains($cart)) {
-            $this->carts->add($cart);
-            $cart->setUser($this);
-        }
-        return $this;
-    }
-
     public function getComments(): Collection
     {
         return $this->comments;
     }
+
     public function addComment(Comment $comment): static
     {
         if (!$this->comments->contains($comment)) {
@@ -155,15 +161,61 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function removeComment(Comment $comment): static
+    {
+        if ($this->comments->removeElement($comment)) {
+            // Assurez-vous que l'entité Comment est bien détachée de l'utilisateur
+            if ($comment->getUser() === $this) {
+                $comment->setUser(null);
+            }
+        }
+        return $this;
+    }
+
+    public function getCarts(): Collection
+    {
+        return $this->carts;
+    }
+
+    public function addCart(Cart $cart): static
+    {
+        if (!$this->carts->contains($cart)) {
+            $this->carts->add($cart);
+            $cart->setUser($this);
+        }
+        return $this;
+    }
+
+    public function removeCart(Cart $cart): static
+    {
+        if ($this->carts->removeElement($cart)) {
+            if ($cart->getUser() === $this) {
+                $cart->setUser(null);
+            }
+        }
+        return $this;
+    }
+
     public function getOrders(): Collection
     {
         return $this->orders;
     }
+
     public function addOrder(Order $order): static
     {
         if (!$this->orders->contains($order)) {
             $this->orders->add($order);
             $order->setUser($this);
+        }
+        return $this;
+    }
+
+    public function removeOrder(Order $order): static
+    {
+        if ($this->orders->removeElement($order)) {
+            if ($order->getUser() === $this) {
+                $order->setUser(null);
+            }
         }
         return $this;
     }
