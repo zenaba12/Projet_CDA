@@ -3,60 +3,79 @@
 namespace App\Controller;
 
 use App\Entity\Product;
+use App\Entity\Comment;
+use App\Form\CommentType;
 use App\Form\ProductType;
+use App\Entity\CartItem;
+use App\Entity\Cart;
+use Symfony\Bundle\SecurityBundle\Security;
+
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use App\Entity\Cart;
-use App\Entity\CartItem;
-use Symfony\Bundle\SecurityBundle\Security;
-use App\Repository\ProductRepository;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 #[Route('/product')]
 class ProductController extends AbstractController
 {
-    //  Afficher la liste des produits
+    // Afficher la liste des produits
     #[Route('/', name: 'product_index', methods: ['GET'])]
     public function index(EntityManagerInterface $em): Response
     {
-        // Vérifie si l'utilisateur est administrateur
         if (!$this->isGranted('ROLE_ADMIN')) {
-            // Ajoute un message flash
             $this->addFlash('error', 'Cet espace est réservé aux administrateurs.');
-
-            // Redirige vers la page d'accueil 
             return $this->redirectToRoute('app_home');
         }
+
         $products = $em->getRepository(Product::class)->findAll();
+
         return $this->render('product/index.html.twig', ['products' => $products]);
     }
 
-    #[Route('/{id}', name: 'product_show', methods: ['GET'], requirements: ['id' => '\d+'])]
-    public function show(ProductRepository $productRepository, int $id): Response
-    {
-        $product = $productRepository->find($id);
+    // Afficher un produit spécifique avec formulaire commentaire
+    #[Route('/{id}', name: 'product_show', methods: ['GET', 'POST'], requirements: ['id' => '\d+'])]
+    public function show(
+        Product $product,
+        Request $request,
+        EntityManagerInterface $entityManager
+    ): Response {
+        $comment = new Comment();
+        $commentForm = $this->createForm(CommentType::class, $comment);
+        $commentForm->handleRequest($request);
 
-        if (!$product) {
-            throw $this->createNotFoundException("⚠️ Produit introuvable !");
+        if ($commentForm->isSubmitted() && $commentForm->isValid()) {
+            if (!$this->getUser()) {
+                return $this->redirectToRoute('app_login');
+            }
+
+            $comment->setUser($this->getUser());
+            $comment->setProduct($product);
+
+            $entityManager->persist($comment);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Commentaire ajouté avec succès.');
+
+            return $this->redirectToRoute('product_show', ['id' => $product->getId()]);
         }
 
-        // Vérifier si le produit a une vue spécifique
+        // Vue spécifique selon le nom du produit
         $template = match ($product->getNom()) {
             'Huile de Batana' => 'product/batana.html.twig',
             'Huile de Moringa' => 'product/moringa.html.twig',
             'Huile de Chebé' => 'product/chebe.html.twig',
-            default => 'product/show.html.twig', // Vue par défaut pour les autres produits
+            default => 'product/show.html.twig',
         };
 
-        return $this->render($template, ['product' => $product]);
+        return $this->render($template, [
+            'product' => $product,
+            'commentForm' => $commentForm->createView(),
+        ]);
     }
-
 
     //  Ajouter un produit
     #[Route('/new', name: 'product_new', methods: ['GET', 'POST'])]

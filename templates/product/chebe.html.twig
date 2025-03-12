@@ -146,4 +146,37 @@ Avant de choisir la chirurgie, pensez aux solutions naturelles comme l’huile d
         </div>
     </div>
 </section>
+<div class="container my-5 comment-section">
+    <h2>Commentaires</h2>
+
+    {% if product.comments|length > 0 %}
+        {% for comment in product.comments %}
+            <div class="comment">
+                <p><strong>{{ comment.user.nom ?? 'Utilisateur supprimé' }}</strong></p>
+                <p>{{ comment.contenu }}</p>
+                <small>Posté le : {{ comment.createdAt|date('d/m/Y à H:i') }}</small>
+
+                {% if app.user and (app.user == comment.user or is_granted('ROLE_ADMIN')) %}
+                    <form method="post" action="{{ path('comment_delete', {'id': comment.id}) }}" onsubmit="return confirm('Confirmer la suppression ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete-comment' ~ comment.id) }}">
+                        <button type="submit" class="btn-delete">Supprimer</button>
+                    </form>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Aucun commentaire pour ce produit.</p>
+    {% endif %}
+
+    {% if app.user %}
+        <h3>Laissez un commentaire :</h3>
+        {{ form_start(commentForm) }}
+            {{ form_row(commentForm.contenu) }}
+            <button type="submit" class="btn-add">Envoyer</button>
+        {{ form_end(commentForm) }}
+    {% else %}
+        <p><a href="{{ path('app_login') }}">Connectez-vous</a> pour laisser un commentaire.</p>
+    {% endif %}
+</div>
+
 {% endblock %}

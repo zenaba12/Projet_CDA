@@ -28,12 +28,12 @@ security:
 
       logout:
         path: app_logout
-        target: app_login
+        target: app_home
         
       
 
   access_control:
-    - { path: ^/login, roles: PUB LIC_ACCESS } # 🔹 Accessible à tout le monde
+    - { path: ^/login, roles: PUBLIC_ACCESS } # 🔹 Accessible à tout le monde
     - { path: ^/logout, roles: PUBLIC_ACCESS } # 🔹 Accessible à tout le monde
     - { path: ^/admin, roles: ROLE_ADMIN } # 🔒 Seulement les admins
     - { path: ^/, roles: PUBLIC_ACCESS } #  Permet aux visiteurs d’accéder aux pages publiques
