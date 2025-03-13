@@ -19,6 +19,8 @@ pipeline {
         stage('Installation des dépendances') {
             steps {
                 dir("${DEPLOY_DIR}") {
+                    export $(grep -v '^#' .env | xargs)
+
                     sh 'composer install --optimize-autoloader'
                 }
             }
