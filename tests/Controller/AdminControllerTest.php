@@ -9,54 +9,63 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AdminControllerTest extends WebTestCase
 {
-    private ?EntityManagerInterface $entityManager = null;
     private $client;
+    private $entityManager;
+    private $passwordHasher;
 
     protected function setUp(): void
     {
-        parent::setUp();
-
-        // Créer un client et récupérer l'EntityManager
         $this->client = static::createClient();
         $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
+        $this->passwordHasher = static::getContainer()->get(UserPasswordHasherInterface::class);
 
-        // Vérifier si un admin existe, sinon le créer
-        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => 'admin@example.com']);
+        // Nettoyer la base avant chaque test
+        $this->entityManager->createQuery('DELETE FROM App\Entity\User')->execute();
 
-        if (!$user) {
-            $user = new User();
-            $user->setEmail('admin@example.com');
-            $user->setPassword(
-                static::getContainer()->get(UserPasswordHasherInterface::class)->hashPassword($user, 'password')
-            );
-            $user->setRoles(['ROLE_ADMIN']);
+        // Créer un admin
+        $admin = new User();
+        $admin->setEmail('admin@example.com');
+        $admin->setPassword($this->passwordHasher->hashPassword($admin, 'password'));
+        $admin->setRoles(['ROLE_ADMIN']);
+        $admin->setNom('Admin Test');
+        $admin->setPrenom('Super Admin');
 
-            $this->entityManager->persist($user);
-            $this->entityManager->flush();
-        }
+        $this->entityManager->persist($admin);
+        $this->entityManager->flush();
     }
 
-    public function testAdminDashboardRedirectIfNotAdmin(): void
+    public function testAdminAccessDeniedForUser(): void
     {
-        $this->client->request('GET', '/admin/');
+        // Créer un utilisateur normal
+        $user = new User();
+        $user->setEmail('user@example.com');
+        $user->setPassword($this->passwordHasher->hashPassword($user, 'userpassword'));
+        $user->setRoles(['ROLE_USER']);
+        $user->setNom('Utilisateur Test');
+        $user->setPrenom('Test');
 
-        // Vérifie si un utilisateur non admin est redirigé vers la page de login
-        $this->assertResponseRedirects('/login');
-    }
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
 
-    public function testAdminDashboardAccessibleForAdmin(): void
-    {
-        // Récupérer l'admin existant
-        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => 'admin@example.com']);
-        $this->assertNotNull($user, 'L\'utilisateur admin@example.com doit exister en base.');
-
-        // Simuler l'authentification avec loginUser()
+        // Connecter l'utilisateur normal
         $this->client->loginUser($user);
-
         $this->client->request('GET', '/admin/');
 
-        // Vérifie que la réponse est bien un succès
+        // Vérifier la redirection vers l'accueil
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    public function testAdminAccessGrantedForAdmin(): void
+    {
+        // Récupérer l'admin en base
+        $admin = $this->entityManager->getRepository(User::class)->findOneBy(['email' => 'admin@example.com']);
+
+        // Connecter l'admin
+        $this->client->loginUser($admin);
+        $this->client->request('GET', '/admin/');
+
+        // Vérifier que la page admin s'affiche
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorExists('h1'); // Vérifie qu'un titre est bien affiché
+        $this->assertSelectorTextContains('h1', '👨‍💼 Tableau de bord Administrateur');
     }
 }

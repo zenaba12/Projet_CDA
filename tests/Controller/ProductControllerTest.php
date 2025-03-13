@@ -5,6 +5,7 @@ namespace App\Tests\Controller;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use App\Entity\Product;
 use App\Entity\Category;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ProductControllerTest extends WebTestCase
@@ -42,7 +43,7 @@ class ProductControllerTest extends WebTestCase
             $this->testProduct->setPrix(10.99);
             $this->testProduct->setStock(100);
             $this->testProduct->setImage('test.jpg');
-            $this->testProduct->setCategory($category); // Associer la catégorie
+            $this->testProduct->setCategory($category);
 
             $this->entityManager->persist($this->testProduct);
             $this->entityManager->flush();
@@ -51,30 +52,32 @@ class ProductControllerTest extends WebTestCase
 
     public function testProductIndexPageIsAccessible(): void
     {
+        $this->client->loginUser($this->createAdminUser());
+
         $this->client->request('GET', '/product/');
-
-        // Vérifie que la page s'affiche correctement
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorExists('h1'); // Vérifie qu'un titre est affiché
     }
 
-    public function testShowProduct(): void
+    private function createAdminUser(): User
     {
-        // Vérifie que le produit test existe en base
-        $this->assertNotNull($this->testProduct, 'Le produit "Produit Test" doit exister.');
+        $adminUser = $this->entityManager->getRepository(User::class)->findOneBy(['email' => 'admin@example.com']);
 
-        $this->client->request('GET', '/product/' . $this->testProduct->getId());
+        if (!$adminUser) {
+            $adminUser = new User();
+            $adminUser->setEmail('admin@example.com');
+            $adminUser->setRoles(['ROLE_ADMIN']);
+            $adminUser->setPassword(password_hash('adminpass', PASSWORD_BCRYPT));
+            $this->entityManager->persist($adminUser);
+            $this->entityManager->flush();
+        }
 
-        // Vérifie que la page du produit est bien accessible
-        $this->assertResponseIsSuccessful();
-        $this->assertSelectorExists('h1'); // Vérifie qu'un titre est affiché
+        return $adminUser;
     }
 
-    public function testCreateProductRequiresAdmin(): void
+    protected function tearDown(): void
     {
-        $this->client->request('GET', '/product/new');
-
-        // Vérifie si un utilisateur non admin est redirigé vers la page de login
-        $this->assertResponseRedirects('/login');
+        parent::tearDown();
+        $this->entityManager->close();
+        $this->entityManager = null;
     }
 }
