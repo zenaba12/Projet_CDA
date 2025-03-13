@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        GIT_REPO = " https://github.com/zenaba12/Projet_CDA"
+        GIT_REPO = "https://github.com/zenaba12/Projet_CDA.git"
         GIT_BRANCH = "main"
         DEPLOY_DIR = "web020"
     }
@@ -15,12 +15,9 @@ pipeline {
             }
         }
 
-
         stage('Installation des dépendances') {
             steps {
                 dir("${DEPLOY_DIR}") {
-                    export $(grep -v '^#' .env | xargs)
-
                     sh 'composer install --optimize-autoloader'
                 }
             }
