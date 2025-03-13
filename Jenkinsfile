@@ -17,15 +17,12 @@ pipeline {
 
 
         stage('Installation des dépendances') {
-    steps {
-        dir("${DEPLOY_DIR}") {
-            withEnv(["DATABASE_URL=mysql://root:@127.0.0.1:3306/boutique?serverVersion=9.1.0&charset=utf8mb4"]) {
-                sh 'echo "DATABASE_URL in Jenkins: $DATABASE_URL"'
-                sh 'composer install --optimize-autoloader'
+            steps {
+                dir("${DEPLOY_DIR}") {
+                    sh 'composer install --optimize-autoloader'
+                }
             }
         }
-    }
-}
 
         stage('Configuration de l\'environnement') {
             steps {
