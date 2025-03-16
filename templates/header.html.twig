@@ -1,10 +1,10 @@
 <header>
   <!-- Barre de notification -->
   <div class="bg-warning text-center py-2">
-    <h2 class="m-0">🚚 Livraison gratuite à partir de 50€ d'achat
+    <h2 class="m-0">🚚 Livraison gratuite à partir de 50€ d'achat</h2>
   </div>
 
-  <div class="container-fluid bg-ligh py-3">
+  <div class="container-fluid py-3">
     <div class="d-flex justify-content-between align-items-center">
       <!-- Logo -->
       <a href="{{ path('app_home') }}">
@@ -12,30 +12,44 @@
       </a>
 
       <!-- Barre de navigation -->
-      <nav class="navbar navbar-expand-lg navbar-light">
+      <nav class="navbar navbar-expand-lg">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav">
-            <li class="nav-item"><a class="nav-link" href="{{ path('app_home') }}"> Accueil</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ path('category_index') }}"> Catalogue</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ path('faq') }}">  FAQ </a></li>
-           <li class="nav-item"><a class="nav-link" href="{{ path('contact') }}"> Contact</a></li>
-           <li class="nav-item"><a class="nav-link" href="{{ path('about') }}"> À propos</a></li>
-            {% if not app.user %}
-              <li class="nav-item"><a class="nav-link" href="{{ path('app_login') }}"> Connexion</a></li>
-              <li class="nav-item"><a class="nav-link" href="{{ path('app_register') }}"> S'inscrire</a></li>
-            {% else %}
+            <li class="nav-item"><a class="nav-link" href="{{ path('app_home') }}">Accueil</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ path('category_index') }}">Catalogue</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ path('faq') }}">FAQ</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ path('contact') }}">Contact</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ path('about') }}">À propos</a></li>
 
- {% if is_granted('ROLE_ADMIN') %}
-    <li class="nav-item">
-      <a class="nav-link text-warning fw-bold" href="{{ path('admin_dashboard') }}">⚙️ Admin</a>
-    </li>
-  {% endif %}
+            {% if not app.user %}
+              <li class="nav-item"><a class="nav-link" href="{{ path('app_login') }}">Connexion</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ path('app_register') }}">S'inscrire</a></li>
+            {% else %}
+              <!-- Menu déroulant "Mon Compte" -->
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                  Mon compte ({{ app.user.nom }})
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="{{ path('user_account') }}">👤 Mes informations</a></li>
+                  <li><a class="dropdown-item" href="{{ path('order_list') }}">📦 Mes commandes</a></li>
+                </ul>
+              </li>
+
+              <!-- Lien "Admin" en dehors du menu déroulant -->
+              {% if is_granted('ROLE_ADMIN') %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ path('admin_dashboard') }}">Admin</a>
+                </li>
+              {% endif %}
+
+              <!-- Bouton de déconnexion en dehors du menu déroulant -->
               <li class="nav-item">
                 <form action="{{ path('app_logout') }}" method="POST" class="d-inline">
-                  <button type="submit" class="btn btn-link nav-link text-warning">Déconnexion</button>
+                  <button type="submit" class="btn btn-link nav-link">Déconnexion</button>
                 </form>
               </li>
             {% endif %}

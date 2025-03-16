@@ -13,6 +13,8 @@ use App\Form\UserType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use App\Repository\OrderRepository;
+
 
 #[Route('/users')]
 class UserController extends AbstractController
@@ -117,5 +119,30 @@ class UserController extends AbstractController
         $em->flush();
 
         return $this->redirectToRoute('users_list');
+    }
+    #[Route('/mon-compte', name: 'user_account')]
+    public function account(Request $request, EntityManagerInterface $entityManager, OrderRepository $orderRepository): Response
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        // Formulaire de modification des infos
+        $form = $this->createForm(UserType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+            $this->addFlash('success', 'Vos informations ont été mises à jour.');
+        }
+
+        // Récupération des commandes de l'utilisateur
+        $orders = $orderRepository->findBy(['user' => $user], ['date' => 'DESC']);
+
+        return $this->render('user/account.html.twig', [
+            'form' => $form->createView(),
+            'orders' => $orders,
+        ]);
     }
 }

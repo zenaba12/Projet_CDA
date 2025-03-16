@@ -36,6 +36,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private array $roles = [];
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $resetToken = null;
+
     #[ORM\Column]
     #[Assert\NotBlank(message: 'Le mot de passe est obligatoire.')]
     #[Assert\Length(
@@ -67,6 +70,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getResetToken(): ?string
+    {
+        return $this->resetToken;
+    }
+
+    public function setResetToken(?string $resetToken): static
+    {
+        $this->resetToken = $resetToken;
+        return $this;
     }
 
     public function getNom(): ?string
@@ -111,7 +125,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function setRoles(array $roles): static
     {
-        // Garantit que ROLE_USER est toujours attribué
         $roles[] = 'ROLE_USER';
         $this->roles = array_unique($roles);
         return $this;
@@ -119,7 +132,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function addRole(string $role): static
     {
-        // Ajoute un rôle uniquement s'il n'existe pas déjà
         if (!in_array($role, $this->roles, true)) {
             $this->roles[] = $role;
         }
@@ -164,7 +176,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeComment(Comment $comment): static
     {
         if ($this->comments->removeElement($comment)) {
-            // Assurez-vous que l'entité Comment est bien détachée de l'utilisateur
             if ($comment->getUser() === $this) {
                 $comment->setUser(null);
             }

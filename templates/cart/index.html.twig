@@ -18,7 +18,7 @@
             <thead>
                 <tr>
                     <th>Produit</th>
-                    <th>Prix</th>
+                    <th>Prix Unitaire</th>
                     <th>Quantité</th>
                     <th>Total</th>
                     <th>Actions</th>
@@ -30,21 +30,26 @@
                         <td>{{ item.product.nom }}</td>
                         <td>{{ item.product.prix }} €</td>
                         <td>
-                            <form action="{{ path('cart_update', { id: item.id }) }}" method="post">
-                                {{ form_widget(forms[item.id].quantity) }}
-                                <button type="submit" class="btn btn-primary">🔄 Mettre à jour</button>
-                            </form>
+                            <input type="number" 
+                                   class="form-control quantity-input" 
+                                   data-id="{{ item.id }}" 
+                                   value="{{ item.quantity }}" 
+                                   min="1">
                         </td>
-                        <td>{{ item.product.prix * item.quantity }} €</td>
+                        <td class="product-price" data-price="{{ item.product.prix }}" data-id="{{ item.id }}">
+    {{ item.product.prix * item.quantity }} €
+</td>
+
                         <td>
-                            <a href="{{ path('cart_remove', { id: item.id }) }}" class="btn btn-danger">❌ Retirer</a>
+                            <a href="{{ path('cart_remove', { id: item.id }) }}" class="btn btn-delete">❌ Retirer</a>
                         </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
 
-        <!-- 🔹 Boutons pour commander et continuer les achats -->
+        <h3 class="text-end mt-4">Total : <span id="cart-total">{{ total }} €</span></h3>
+
         <div class="d-flex justify-content-between mt-4">
             <div>
                 <a href="{{ path('category_index') }}" class="btn btn-secondary">⬅️ Continuer les achats</a>
@@ -53,7 +58,6 @@
                 <a href="{{ path('cart_checkout') }}" class="btn btn-success">✅ Commander</a>
             </div>
         </div>
-
     {% else %}
         <p class="text-center">Votre panier est vide.</p>
         <div class="text-center mt-3">
@@ -61,4 +65,43 @@
         </div>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll(".quantity-input").forEach(input => {
+        input.addEventListener("change", function() {
+            let itemId = this.dataset.id;
+            let newQuantity = this.value;
+
+            if (newQuantity < 1) {
+                alert("La quantité ne peut pas être inférieure à 1.");
+                this.value = 1;
+                return;
+            }
+
+            fetch(`/cart/update/${itemId}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: `quantity=${newQuantity}`
+            }).then(response => response.text())
+              .then(() => {
+                  let productPriceElement = document.querySelector(`[data-id='${itemId}']`);
+                  let unitPrice = parseFloat(productPriceElement.dataset.price);
+                  let newTotal = (unitPrice * newQuantity).toFixed(2) + " €";
+                  productPriceElement.textContent = newTotal;
+
+                  let cartTotal = 0;
+                  document.querySelectorAll(".product-price").forEach(priceElem => {
+                      cartTotal += parseFloat(priceElem.textContent);
+                  });
+                  document.getElementById("cart-total").textContent = cartTotal.toFixed(2) + " €";
+              });
+        });
+    });
+});
+</script>
 {% endblock %}

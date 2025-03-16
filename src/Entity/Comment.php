@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\CommentRepository;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
@@ -15,6 +16,7 @@ class Comment
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank]
     private ?string $contenu = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
@@ -42,6 +44,7 @@ class Comment
     {
         return $this->contenu;
     }
+
     public function setContenu(string $contenu): static
     {
         $this->contenu = $contenu;
@@ -52,6 +55,7 @@ class Comment
     {
         return $this->createdAt;
     }
+
     public function setCreatedAt(\DateTimeInterface $createdAt): static
     {
         $this->createdAt = $createdAt;
@@ -62,6 +66,7 @@ class Comment
     {
         return $this->user;
     }
+
     public function setUser(?User $user): static
     {
         $this->user = $user;
@@ -72,6 +77,7 @@ class Comment
     {
         return $this->product;
     }
+
     public function setProduct(?Product $product): static
     {
         $this->product = $product;

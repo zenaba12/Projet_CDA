@@ -25,15 +25,6 @@ class UserType extends AbstractType
                 'label' => 'Prénom',
                 'required' => true
             ])
-            ->add('roles', ChoiceType::class, [
-                'choices' => [
-                    'Utilisateur' => 'ROLE_USER',
-                    'Administrateur' => 'ROLE_ADMIN',
-                ],
-                'expanded' => true,
-                'multiple' => true,
-                'label' => 'Rôles'
-            ])
             ->add('email', EmailType::class, [
                 'label' => 'Email',
                 'required' => true
@@ -54,12 +45,26 @@ class UserType extends AbstractType
                     ])
                 ]
             ]);
+
+        // ✅ Ajout du champ "Rôles" uniquement si l'utilisateur est admin
+        if ($options['is_admin']) {
+            $builder->add('roles', ChoiceType::class, [
+                'choices' => [
+                    'Utilisateur' => 'ROLE_USER',
+                    'Administrateur' => 'ROLE_ADMIN',
+                ],
+                'expanded' => true,
+                'multiple' => true,
+                'label' => 'Rôles'
+            ]);
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => User::class,
+            'is_admin' => false, // Par défaut, l'utilisateur n'est pas admin
         ]);
     }
 }

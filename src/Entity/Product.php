@@ -59,6 +59,7 @@ class Product
     {
         return $this->nom;
     }
+
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
@@ -69,6 +70,7 @@ class Product
     {
         return $this->description;
     }
+
     public function setDescription(string $description): static
     {
         $this->description = $description;
@@ -79,6 +81,7 @@ class Product
     {
         return $this->prix;
     }
+
     public function setPrix(float $prix): static
     {
         $this->prix = $prix;
@@ -89,6 +92,7 @@ class Product
     {
         return $this->stock;
     }
+
     public function setStock(int $stock): static
     {
         $this->stock = $stock;
@@ -99,6 +103,7 @@ class Product
     {
         return $this->image;
     }
+
     public function setImage(?string $image): static
     {
         $this->image = $image;
@@ -109,6 +114,7 @@ class Product
     {
         return $this->comments;
     }
+
     public function addComment(Comment $comment): static
     {
         if (!$this->comments->contains($comment)) {
@@ -122,6 +128,7 @@ class Product
     {
         return $this->category;
     }
+
     public function setCategory(?Category $category): static
     {
         $this->category = $category;
@@ -132,6 +139,7 @@ class Product
     {
         return $this->cartItems;
     }
+
     public function getOrderItems(): Collection
     {
         return $this->orderItems;

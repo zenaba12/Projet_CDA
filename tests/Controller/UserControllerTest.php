@@ -80,15 +80,15 @@ class UserControllerTest extends WebTestCase
 
     public function testDeleteUser(): void
     {
-        // 🔥 Vérifier et démarrer la session si elle n'est pas active
+        //  Vérifier et démarrer la session si elle n'est pas active
         if (!$this->session->isStarted()) {
             $this->session->start();
         }
 
-        // 🔥 Ajouter un cookie de session au client
+        //  Ajouter un cookie de session au client
         $this->client->getCookieJar()->set(new Cookie($this->session->getName(), $this->session->getId()));
 
-        // 🔥 Créer un utilisateur test à supprimer
+        //  Créer un utilisateur test à supprimer
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => 'test@example.com']);
 
         if (!$user) {
@@ -102,18 +102,18 @@ class UserControllerTest extends WebTestCase
             $this->entityManager->flush();
         }
 
-        // 🔥 Récupérer un token CSRF valide
+        //  Récupérer un token CSRF valide
         $csrfToken = $this->csrfTokenManager->getToken('delete' . $user->getId())->getValue();
 
-        // 🔥 Vérifier que le token CSRF est bien généré
+        //  Vérifier que le token CSRF est bien généré
         $this->assertNotEmpty($csrfToken, "Le token CSRF est vide, vérifie que la session est bien active.");
 
-        // 🔥 Envoyer la requête de suppression avec un vrai token CSRF
+        //  Envoyer la requête de suppression avec un vrai token CSRF
         $this->client->request('POST', '/users/delete/' . $user->getId(), [
             '_token' => $csrfToken
         ]);
 
-        // 🔥 Vérifier la redirection après suppression
+        //  Vérifier la redirection après suppression
         $this->assertResponseRedirects('/users/');
     }
 }

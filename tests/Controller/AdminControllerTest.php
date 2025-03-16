@@ -52,7 +52,9 @@ class AdminControllerTest extends WebTestCase
         $this->client->request('GET', '/admin/');
 
         // Vérifier la redirection vers l'accueil
-        $this->assertResponseStatusCodeSame(403);
+        $this->assertResponseStatusCodeSame(302);
+        $this->assertResponseRedirects('/'); // Redirection vers la page d'accueil
+
     }
 
     public function testAdminAccessGrantedForAdmin(): void
