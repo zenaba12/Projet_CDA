@@ -55,7 +55,8 @@ class UserType extends AbstractType
                 ],
                 'expanded' => true, // Affichage sous forme de cases à cocher
                 'multiple' => true, // Permettre plusieurs rôles
-                'label' => 'Rôles'
+                'label' => 'Rôles',
+                'mapped' => false, // IMPORTANT : Empêche Symfony de chercher "roles" comme une propriété
             ]);
         }
     }
