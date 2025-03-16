@@ -32,7 +32,7 @@ class UserType extends AbstractType
             ->add('password', PasswordType::class, [
                 'label' => 'Mot de passe',
                 'mapped' => true,
-                'required' => false,
+                'required' => false, // Pas obligatoire en édition
                 'attr' => ['autocomplete' => 'new-password'],
                 'constraints' => [
                     new Assert\Length([
@@ -46,15 +46,15 @@ class UserType extends AbstractType
                 ]
             ]);
 
-        // ✅ Ajout du champ "Rôles" uniquement si l'utilisateur est admin
+        // Permettre aux admins de choisir le rôle
         if ($options['is_admin']) {
             $builder->add('roles', ChoiceType::class, [
                 'choices' => [
                     'Utilisateur' => 'ROLE_USER',
                     'Administrateur' => 'ROLE_ADMIN',
                 ],
-                'expanded' => true,
-                'multiple' => true,
+                'expanded' => true, // Affichage sous forme de cases à cocher
+                'multiple' => true, // Permettre plusieurs rôles
                 'label' => 'Rôles'
             ]);
         }
@@ -64,7 +64,7 @@ class UserType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => User::class,
-            'is_admin' => false, // Par défaut, l'utilisateur n'est pas admin
+            'is_admin' => false, // Par défaut, on considère que ce n'est pas un admin
         ]);
     }
 }
