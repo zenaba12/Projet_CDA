@@ -43,7 +43,7 @@ class RegistrationFormType extends AbstractType
             ])
             ->add('password', PasswordType::class, [
                 'label' => 'Mot de passe',
-                'mapped' => true, // Il est bien lié à l'entité User
+                'mapped' => false, // Il est bien lié à l'entité User
                 'attr' => ['class' => 'form-control'],
                 'constraints' => [
                     new Assert\NotBlank(['message' => 'Le mot de passe est obligatoire.']),
