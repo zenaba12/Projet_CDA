@@ -63,12 +63,12 @@ header {
   margin-bottom: 5px;
 }
 .bg-light {
-  background-color:#6c757d!important;
+  background-color:#6c757d;
 }
 
 @media (max-width: 576px) { /* Ajuste l'affichage pour les écrans <= 576px */
   .container {
-      flex-wrap: nowrap !important; /* Empêche le passage à la ligne */
+      flex-wrap: nowrap ; /* Empêche le passage à la ligne */
       overflow-x: auto; /* Ajoute un défilement horizontal si nécessaire */
       justify-content: space-between; /* Espace les éléments */
   }
@@ -119,14 +119,14 @@ header {
 
 /* Responsive */
 
-/* 📱 TABLETTES (768px - 1024px) */
+/*  TABLETTES (768px - 1024px) */
 @media screen and (max-width: 1024px) {
   .product-card {
       width: calc(50% - 20px);
   }
 }
 
-/* 📱 MOBILES (≤ 768px) */
+/*  MOBILES (≤ 768px) */
 @media screen and (max-width: 768px) {
   .product-card {
       width: 100%;
