@@ -132,6 +132,7 @@ class ProductController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var UploadedFile $imageFile */
             $imageFile = $form->get('image')->getData();
+
             if ($imageFile) {
                 $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFilename = $slugger->slug($originalFilename);
@@ -139,19 +140,21 @@ class ProductController extends AbstractController
 
                 try {
                     $imageFile->move($this->getParameter('images_directory'), $newFilename);
+                    $product->setImage($newFilename); // Mise à jour de l’image
                 } catch (FileException $e) {
                     $this->addFlash('error', "Erreur lors de l'upload de l'image : " . $e->getMessage());
-                    return $this->redirectToRoute('product_new');
+                    return $this->redirectToRoute('product_edit', ['id' => $product->getId()]);
                 }
-
-                $product->setImage($newFilename);
+            } else {
+                // IMPORTANT : Conserver l'ancienne image si aucun fichier n'est uploadé
+                $product->setImage($product->getImage());
             }
 
             $em->flush();
-
             $this->addFlash('success', 'Produit mis à jour avec succès.');
             return $this->redirectToRoute('product_index');
         }
+
 
         return $this->render('product/edit.html.twig', [
             'form' => $form->createView(),
