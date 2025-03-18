@@ -140,7 +140,8 @@ class ProductController extends AbstractController
                 try {
                     $imageFile->move($this->getParameter('images_directory'), $newFilename);
                 } catch (FileException $e) {
-                    throw new \Exception("Erreur lors de l'upload de l'image.");
+                    $this->addFlash('error', "Erreur lors de l'upload de l'image : " . $e->getMessage());
+                    return $this->redirectToRoute('product_new');
                 }
 
                 $product->setImage($newFilename);
